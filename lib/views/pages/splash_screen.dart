@@ -19,8 +19,10 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     context.read<PrayerTimeController>().initPrayerTime().then(
-          (value) => Navigator.pushNamed(context, MainLayout.routeName),
+          (value) =>
+              Navigator.pushReplacementNamed(context, MainLayout.routeName),
         );
+
     //.then(
     //           (value) => Navigator.pushNamed(context, MainLayout.routeName),
     //     )

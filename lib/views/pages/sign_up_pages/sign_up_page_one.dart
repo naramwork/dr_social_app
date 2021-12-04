@@ -1,8 +1,10 @@
 import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/views/components/next_button.dart';
 import 'package:dr_social/views/components/phone_text_field.dart';
 import 'package:dr_social/views/components/rounded_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/src/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class SignUpPageOne extends StatelessWidget {
@@ -139,7 +141,8 @@ class _GenderCardState extends State<GenderCard> {
               child: Text(
                 'الجنس',
                 style: TextStyle(
-                    color: ColorConst.textInputHintColor, fontSize: 16),
+                    color: context.watch<ColorMode>().textInputHintColor,
+                    fontSize: 16),
               ),
             ),
             Expanded(

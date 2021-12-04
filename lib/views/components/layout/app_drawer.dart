@@ -1,6 +1,8 @@
 import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/views/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -44,7 +46,9 @@ class AppDrawer extends StatelessWidget {
                 'ضيف',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: isDarkMode ? Colors.blue.shade300 : Colors.black87,
+                    color: context.watch<ColorMode>().isDarkMode
+                        ? Colors.blue.shade300
+                        : Colors.black87,
                     fontSize: 18,
                     fontWeight: FontWeight.w500),
               ),

@@ -1,6 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/app/helper_files/prayer_notification_builder.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/prayer_time_controller.dart';
 import 'package:dr_social/theme_widget.dart';
 import 'package:dr_social/views/main_layout.dart';
@@ -16,17 +17,21 @@ void main() async {
       // set the icon to null if you want to use the default app icon
       null,
       [
-        NotificationChannel(
-            channelKey: 'basic_channel',
-            channelName: 'Basic notifications',
-            channelDescription: 'Notification channel for basic tests',
-            defaultColor: Color(0xFF9D50DD),
-            ledColor: Colors.white)
+        setNewPrayerChannel(name: 'صلاة الفجر', key: 'fajer_time'),
+        setNewPrayerChannel(name: 'صلاة الظهر', key: 'duhar_time'),
+        setNewPrayerChannel(name: 'صلاة العصر', key: 'asr_time'),
+        setNewPrayerChannel(name: 'صلاة المغرب', key: 'magrb_time'),
+        setNewPrayerChannel(name: 'صلاة العشاء', key: 'isha_time'),
+      ],
+      channelGroups: [
+        NotificationChannelGroup(
+            channelGroupkey: 'prayer_times_group',
+            channelGroupName: 'مواعيد الصلاة')
       ]);
 
   WidgetsFlutterBinding.ensureInitialized();
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
-  isDarkMode = savedThemeMode == AdaptiveThemeMode.dark;
+
   runApp(MyApp(
     savedThemeMode: savedThemeMode,
   ));
@@ -43,6 +48,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (ctx) => PrayerTimeController(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => ColorMode(savedThemeMode == AdaptiveThemeMode.dark),
         ),
       ],
       child: ResponsiveSizer(builder: (context, orientation, screenType) {

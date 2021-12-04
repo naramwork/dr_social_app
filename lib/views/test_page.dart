@@ -1,7 +1,9 @@
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:dr_social/app/themes/color_const.dart';
-import 'package:dr_social/views/page_name_container.dart';
+import 'package:dr_social/controllers/color_mode.dart';
+import 'package:dr_social/views/components/page_name_container.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/src/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class TestPage extends StatefulWidget {
@@ -60,14 +62,15 @@ class _TestPageState extends State<TestPage> {
               decorator: DotsDecorator(
                 size: Size(11.0.w, 10),
                 activeSize: Size(11.0.w, 10),
-                color: ColorConst.dotColor,
-                activeColor: ColorConst.dotActiveColor,
+                color: context.watch<ColorMode>().dotColor,
+                activeColor: context.watch<ColorMode>().dotActiveColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
                 activeShape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
-                  side: BorderSide(color: ColorConst.dotColor, width: 0.2),
+                  side: BorderSide(
+                      color: context.watch<ColorMode>().dotColor, width: 0.2),
                 ),
               ),
               onTap: changPage,

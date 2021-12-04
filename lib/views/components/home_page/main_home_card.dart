@@ -1,4 +1,5 @@
 import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/prayer_time_controller.dart';
 import 'package:dr_social/models/arabic_date.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +24,17 @@ class MainHomeCard extends StatelessWidget {
             padding: EdgeInsets.only(top: 1.5.h),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(rad),
-              color: isDarkMode ? Color(0xff366c85) : Color(0xff72A0BF),
+              color: context.watch<ColorMode>().isDarkMode
+                  ? Color(0xff366c85)
+                  : Color(0xff72A0BF),
             ),
             child: Container(
               padding: EdgeInsets.only(top: 1.5.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(rad),
-                color: isDarkMode ? Color(0xff467f9e) : Color(0xff538CB2),
+                color: context.watch<ColorMode>().isDarkMode
+                    ? Color(0xff467f9e)
+                    : Color(0xff538CB2),
               ),
               child: Container(
                 height: 26.h,

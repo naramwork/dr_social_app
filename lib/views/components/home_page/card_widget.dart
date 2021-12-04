@@ -1,5 +1,7 @@
 import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CardWidget extends StatelessWidget {
   final Widget topWidget;
@@ -26,7 +28,7 @@ class CardWidget extends StatelessWidget {
                 height: 300,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: isDarkMode
+                  color: context.watch<ColorMode>().isDarkMode
                       ? Theme.of(context).primaryColor
                       : Colors.white38,
                 ),
@@ -61,7 +63,7 @@ class CardWidget extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: isDarkMode
+                            color: context.watch<ColorMode>().isDarkMode
                                 ? Theme.of(context).primaryColorDark
                                 : Theme.of(context).primaryColor,
                           ),

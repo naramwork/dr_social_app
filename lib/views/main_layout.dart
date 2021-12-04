@@ -1,5 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/views/components/layout/app_drawer.dart';
 import 'package:dr_social/views/components/layout/custom_bottom_app_bar.dart';
 import 'package:dr_social/views/components/layout/fap.dart';
@@ -7,6 +7,7 @@ import 'package:dr_social/views/pages/home_page.dart';
 import 'package:dr_social/views/pages/prayer_times_page.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:provider/provider.dart';
 
 class MainLayout extends StatefulWidget {
   static const routeName = '/main';
@@ -25,18 +26,19 @@ class _MainLayoutState extends State<MainLayout> {
     // PageOne(),
     HomePage(),
     HomePage(),
-    const PrayerTimesPage(),
+    PrayerTimesPage(),
   ];
 
-  void changeTheme() async {
+  void changeTheme(BuildContext context) async {
     AdaptiveTheme.of(context).toggleThemeMode();
     final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
-    isDarkMode = savedThemeMode == AdaptiveThemeMode.dark;
+    context
+        .read<ColorMode>()
+        .changeColorMode(savedThemeMode == AdaptiveThemeMode.dark);
   }
 
   void selectPage(int index, BuildContext context) {
-    print(index);
     setState(() {
       _selectedIndex = index;
       // ColorConst.isDarkMode = !ColorConst.isDarkMode;
@@ -100,7 +102,7 @@ class _MainLayoutState extends State<MainLayout> {
       body: _pages[widget.index ?? _selectedIndex],
       floatingActionButton: FAP(
         onPressed: () {
-          changeTheme();
+          changeTheme(context);
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

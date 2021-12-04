@@ -1,8 +1,10 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/src/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class ThemeWidget extends StatelessWidget {
+class ThemeWidget extends StatefulWidget {
   final AdaptiveThemeBuilder builder;
   final AdaptiveThemeMode? savedThemeMode;
   ThemeWidget({
@@ -11,14 +13,15 @@ class ThemeWidget extends StatelessWidget {
     this.savedThemeMode,
   }) : super(key: key);
 
-  /*
-  * primaryColor : bottomNavbar - appBar
-  * primaryColorDark : menuItem(not_active)
-  * primaryColorLight : menuItem(active)
-  * bodyText1 : color: black87 , menuTitle
-  * headline2 : color: grey , menuItem(not_active)
-  * subtitle2 : color: blue.shade100 menuItem(active) - HomeScreen(smallText)
-  * */
+  @override
+  State<ThemeWidget> createState() => _ThemeWidgetState();
+}
+
+class _ThemeWidgetState extends State<ThemeWidget> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
   final ThemeData lightTheme = ThemeData(
     primaryColor: Colors.white,
@@ -37,7 +40,7 @@ class ThemeWidget extends StatelessWidget {
     primaryColor: const Color(0xFF184B6C),
     primaryColorDark: Color(0xFF043453),
     bottomAppBarColor: Colors.white,
-    canvasColor: Color.fromARGB(255, 0, 10, 22),
+    canvasColor: const Color.fromARGB(255, 0, 10, 22),
     fontFamily: 'Tajawal',
     textTheme: TextTheme(
       headline2: TextStyle(
@@ -52,8 +55,8 @@ class ThemeWidget extends StatelessWidget {
     return AdaptiveTheme(
       light: lightTheme,
       dark: darkTheme,
-      initial: savedThemeMode ?? AdaptiveThemeMode.light,
-      builder: builder,
+      initial: widget.savedThemeMode ?? AdaptiveThemeMode.light,
+      builder: widget.builder,
     );
   }
 }

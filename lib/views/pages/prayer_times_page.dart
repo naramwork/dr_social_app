@@ -1,16 +1,18 @@
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:cron/cron.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/prayer_time_controller.dart';
-import 'package:dr_social/models/paryer_hour.dart';
+import 'package:dr_social/models/prayer_hour.dart';
+
 import 'package:dr_social/views/components/prayer_time_container.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-import '../page_name_container.dart';
+import '../components/page_name_container.dart';
 
 class PrayerTimesPage extends StatefulWidget {
   const PrayerTimesPage({Key? key}) : super(key: key);
@@ -29,10 +31,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   @override
   void initState() {
     super.initState();
-    final cron = Cron();
-    cron.schedule(Schedule.parse('*/1 * * * *'), () async {
-      createWaterReminderNotification();
-    });
+
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         // Insert here your friendly dialog box before call the request method
@@ -50,53 +49,45 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
       PrayerHour(
         salahName: 'صلاة الفجر',
         time: convertTimeToString(prayerTimes.fajr),
+        imageUrl: 'assets/images/fajer.png',
       ),
       PrayerHour(
         salahName: 'صلاة الظهر',
         time: convertTimeToString(prayerTimes.dhuhr),
+        imageUrl: 'assets/images/zoher.png',
       ),
       PrayerHour(
         salahName: 'صلاة العصر',
         time: convertTimeToString(prayerTimes.asr),
+        imageUrl: 'assets/images/asr.png',
       ),
       PrayerHour(
         salahName: 'صلاة المغرب',
         time: convertTimeToString(prayerTimes.maghrib),
+        imageUrl: 'assets/images/magrb.png',
       ),
       PrayerHour(
         salahName: 'صلاة العشاء',
         time: convertTimeToString(prayerTimes.isha),
+        imageUrl: 'assets/images/isha.png',
       ),
     ];
+
+    context.watch<PrayerTimeController>().setWeeklyPrayerTime();
   }
 
-  Future<void> createWaterReminderNotification() async {
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: 2,
-        channelKey: 'basic_channel',
-        title: '${Emojis.wheater_droplet} Add some water to your plant!',
-        body: 'Water your plant regularly to keep it healthy.',
-        notificationLayout: NotificationLayout.Default,
-      ),
-      actionButtons: [
-        NotificationActionButton(
-          key: 'MARK_DONE',
-          label: 'Mark Done',
-        )
-      ],
-      schedule: NotificationCalendar(
-        weekday: DateTime.now().weekday,
-        hour: DateTime.now().hour,
-        minute: DateTime.now().minute,
-        second: DateTime.now().add(Duration(seconds: 5)).second,
-        millisecond: 0,
-      ),
-    );
+  void ndfj() async {
+    List<NotificationModel> lid =
+        await AwesomeNotifications().listScheduledNotifications();
+
+    for (NotificationModel ni in lid) {
+      print(ni.schedule);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    ndfj();
     return Stack(
       children: [
         Center(
@@ -106,7 +97,9 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
             child: Container(
               width: 75.w,
               height: double.infinity,
-              color: Colors.white,
+              color: context.watch<ColorMode>().isDarkMode
+                  ? const Color(0xff111C2E)
+                  : Colors.white,
             ),
           ),
         ),
@@ -115,28 +108,78 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
           child: CustomScrollView(
             slivers: [
               PageNameContainer(
-                pageTitle: 'مواعيد الصلاة',
+                pageTitle: '﴿ مواعيد الصلاة ﴾',
                 minHeight: 15.0.h,
                 maxHeight: 25.0.h,
                 bottomBorderRad: const Radius.elliptical(100, 40),
-                backgroundImageUrl: 'assets/images/mosque.jpg',
+                backgroundImageUrl: 'assets/images/prayer_times_bg.png',
               ),
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(3.w, 5.h, 3.w, 10.h),
-                sliver: SliverStaggeredGrid.countBuilder(
-                  crossAxisCount: 2,
-                  itemCount: 5,
-                  itemBuilder: (BuildContext context, int index) =>
-                      PrayerTimeContainer(
-                          salahName: prayerHour[index].salahName,
-                          dateName: prayerHour[index].time),
-                  staggeredTileBuilder: (int index) {
-                    return StaggeredTile.count(index == 5 - 1 ? 2 : 1, 1);
-                  },
-                  crossAxisSpacing: 2.w,
-                  mainAxisSpacing: 2.h,
-                ),
-              ),
+                  padding: EdgeInsets.fromLTRB(3.w, 5.h, 3.w, 10.h),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            PrayerTimeContainer(
+                              salahName: prayerHour[0].salahName,
+                              dateName: prayerHour[0].time,
+                              imageUrl: prayerHour[0].imageUrl,
+                              filterColer: Colors.blue.withOpacity(0.2),
+                              color: Colors.blue.shade300,
+                            ),
+                            SizedBox(
+                              width: 2.w,
+                            ),
+                            PrayerTimeContainer(
+                              salahName: prayerHour[1].salahName,
+                              dateName: prayerHour[1].time,
+                              imageUrl: prayerHour[1].imageUrl,
+                              filterColer: Colors.blue.withOpacity(0.3),
+                              color: Colors.blue.shade200,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 2.h,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            PrayerTimeContainer(
+                              salahName: prayerHour[2].salahName,
+                              dateName: prayerHour[2].time,
+                              imageUrl: prayerHour[2].imageUrl,
+                              filterColer: Colors.blue.withOpacity(0.3),
+                              color: const Color(0xff8AC0FF),
+                            ),
+                            SizedBox(
+                              width: 2.w,
+                            ),
+                            PrayerTimeContainer(
+                              salahName: prayerHour[3].salahName,
+                              dateName: prayerHour[3].time,
+                              imageUrl: prayerHour[3].imageUrl,
+                              filterColer: Colors.blue.withOpacity(0.3),
+                              color: const Color(0xff8B95DD),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 2.h,
+                        ),
+                        PrayerTimeContainer(
+                          salahName: prayerHour[4].salahName,
+                          dateName: prayerHour[4].time,
+                          imageUrl: prayerHour[4].imageUrl,
+                          filterColer: Colors.blue.withOpacity(0.3),
+                          color: const Color(0xff7382EE),
+                        ),
+                      ],
+                      //6077E5
+                    ),
+                  )),
             ],
           ),
         )

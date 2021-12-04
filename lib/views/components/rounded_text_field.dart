@@ -1,8 +1,10 @@
 import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/src/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class RoundedTextField extends StatelessWidget {
@@ -57,18 +59,18 @@ class RoundedTextField extends StatelessWidget {
                 ? Icon(
                     icon,
                     size: 35,
-                    color: ColorConst.textInputIconColor,
+                    color: context.watch<ColorMode>().textInputIconColor,
                   )
                 : ImageIcon(
                     AssetImage(imageIcon!),
                     size: 35,
-                    color: ColorConst.textInputIconColor,
+                    color: context.watch<ColorMode>().textInputIconColor,
                   ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: VerticalDivider(
                 thickness: 2,
-                color: isDarkMode
+                color: context.watch<ColorMode>().isDarkMode
                     ? const Color.fromRGBO(200, 230, 241, 0.6)
                     : Colors.grey.shade300,
               ),
@@ -86,7 +88,9 @@ class RoundedTextField extends StatelessWidget {
                 },
                 keyboardType: inputType,
                 textAlignVertical: TextAlignVertical.center,
-                cursorColor: isDarkMode ? Colors.white : Colors.grey,
+                cursorColor: context.watch<ColorMode>().isDarkMode
+                    ? Colors.white
+                    : Colors.grey,
                 autocorrect: false,
                 obscureText: isPassword,
                 maxLength: maxLine,
@@ -95,7 +99,8 @@ class RoundedTextField extends StatelessWidget {
                   contentPadding: EdgeInsets.symmetric(vertical: 3.h),
                   hintText: hintText,
                   hintStyle: TextStyle(
-                      color: ColorConst.textInputHintColor, fontSize: 16),
+                      color: context.watch<ColorMode>().textInputHintColor,
+                      fontSize: 16),
                   border: InputBorder.none,
                 ),
               ),

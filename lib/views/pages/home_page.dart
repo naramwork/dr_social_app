@@ -1,26 +1,17 @@
 import 'dart:math';
 
 import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/views/components/home_page/card_widget.dart';
 import 'package:dr_social/views/components/home_page/main_home_card.dart';
 import 'package:dr_social/views/components/rounded_button_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: TestWidget(),
-    );
-  }
-}
-
-class TestWidget extends StatelessWidget {
-  const TestWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +24,9 @@ class TestWidget extends StatelessWidget {
             child: Container(
               width: 85.w,
               height: double.infinity,
-              color: isDarkMode ? Color(0xff111C2E) : Colors.white,
+              color: context.watch<ColorMode>().isDarkMode
+                  ? Color(0xff111C2E)
+                  : Colors.white,
             ),
           ),
         ),

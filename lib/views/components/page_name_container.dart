@@ -29,22 +29,25 @@ class PageNameContainer extends StatelessWidget {
           child: Container(
             height: maxHeight,
             decoration: BoxDecoration(
+              color: const Color(0xff80aaff),
               borderRadius: BorderRadius.vertical(
                 bottom: bottomBorderRad,
               ),
               image: DecorationImage(
                 image: AssetImage(backgroundImageUrl),
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
+                colorFilter: ColorFilter.mode(
+                    Colors.blue.withOpacity(0.2), BlendMode.dstIn),
               ),
             ),
             child: Container(
               padding: EdgeInsets.only(bottom: 3.h),
               height: maxHeight,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(
-                    bottom: bottomBorderRad,
-                  ),
-                  color: ColorConst.darkTransparent),
+                borderRadius: BorderRadius.vertical(
+                  bottom: bottomBorderRad,
+                ),
+              ),
               alignment: Alignment.bottomCenter,
               child: Text(
                 pageTitle,

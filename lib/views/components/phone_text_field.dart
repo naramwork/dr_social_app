@@ -1,10 +1,12 @@
 import 'package:country_calling_code_picker/picker.dart';
 import 'package:dr_social/app/themes/color_const.dart';
+import 'package:dr_social/controllers/color_mode.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:phone_number/phone_number.dart';
+import 'package:provider/src/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class PhoneTextField extends StatefulWidget {
@@ -105,18 +107,18 @@ class _PhoneTextFieldState extends State<PhoneTextField> {
                 ? Icon(
                     widget.icon,
                     size: 35,
-                    color: ColorConst.textInputIconColor,
+                    color: context.watch<ColorMode>().textInputIconColor,
                   )
                 : ImageIcon(
                     AssetImage(widget.imageIcon!),
                     size: 35,
-                    color: ColorConst.textInputIconColor,
+                    color: context.watch<ColorMode>().textInputIconColor,
                   ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: VerticalDivider(
                 thickness: 2,
-                color: isDarkMode
+                color: context.watch<ColorMode>().isDarkMode
                     ? const Color.fromRGBO(200, 230, 241, 0.6)
                     : Colors.grey.shade300,
               ),
@@ -167,14 +169,17 @@ class _PhoneTextFieldState extends State<PhoneTextField> {
                   return null;
                 },
                 textAlignVertical: TextAlignVertical.center,
-                cursorColor: isDarkMode ? Colors.white : Colors.grey,
+                cursorColor: context.watch<ColorMode>().isDarkMode
+                    ? Colors.white
+                    : Colors.grey,
                 autocorrect: false,
                 maxLength: widget.maxLine,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(vertical: 3.h),
                   hintText: widget.hintText,
                   hintStyle: TextStyle(
-                      color: ColorConst.textInputHintColor, fontSize: 16),
+                      color: context.watch<ColorMode>().textInputIconColor,
+                      fontSize: 16),
                   border: InputBorder.none,
                 ),
               ),
