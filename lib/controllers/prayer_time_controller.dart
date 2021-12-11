@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:adhan_dart/adhan_dart.dart';
+import 'package:dr_social/app/helper_files/app_const.dart';
 import 'package:dr_social/app/helper_files/prayer_notification_builder.dart';
 import 'package:dr_social/models/arabic_date.dart';
 import 'package:dr_social/models/prayer_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:hijri/hijri_calendar.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
@@ -14,6 +16,7 @@ import 'package:location/location.dart';
 class PrayerTimeController with ChangeNotifier {
   late ArabicDate _arabicDate;
   late PrayerTimes _prayerTimes;
+
   String _locationName = 'غير محدد';
 
   ArabicDate get arabicDate => _arabicDate;
@@ -37,7 +40,9 @@ class PrayerTimeController with ChangeNotifier {
     String timeRemaining = '';
 
     DateTime now = DateTime.now();
-    DateTime? azanTime = _prayerTimes.timeForPrayer(_prayerTimes.nextPrayer());
+
+    DateTime? azanTime =
+        _prayerTimes.timeForPrayer(skipPrayer(_prayerTimes.nextPrayer()));
     if (azanTime == null) return '';
     var timeDifference = azanTime.difference(now);
 
@@ -71,8 +76,9 @@ class PrayerTimeController with ChangeNotifier {
         timeRemaining = '$minutes دقيقة ';
       }
     }
-
-    return timeRemaining;
+    String azanName = getArabicAzanName(skipPrayer(_prayerTimes.nextPrayer()));
+    if (azanName.isEmpty || timeRemaining.isEmpty) return '';
+    return 'تبقى $timeRemaining لآذان $azanName';
   }
 
   String getArabicAzanName(String prayer) {
@@ -95,6 +101,24 @@ class PrayerTimeController with ChangeNotifier {
     } else {
       return '';
     }
+  }
+
+  String skipPrayer(String nextPrye) {
+    if (nextPrye == Prayer.Sunrise) {
+      return Prayer.Dhuhr;
+    } else if (nextPrye == Prayer.FajrAfter) {
+      return Prayer.Dhuhr;
+    } else if (nextPrye == Prayer.IshaBefore) {
+      return Prayer.Isha;
+    }
+    return nextPrye;
+  }
+
+  String nextAzanTime() {
+    String time = '';
+    DateTime? azanTime = _prayerTimes.timeForPrayer(_prayerTimes.nextPrayer());
+    time = DateFormat.jms('ar_Dz').format(azanTime!.toLocal()).toString();
+    return 'موعد الآذان $time';
   }
 
   void setPrayerVars(HijriCalendar hijriDate) {
@@ -159,6 +183,21 @@ class PrayerTimeController with ChangeNotifier {
   }
 
   void setWeeklyPrayerTime() async {
+    Box prayerNotificationBox =
+        Hive.box<PrayerNotification>(kNotificationBoxName);
+
+    DateTime? azanTime = _prayerTimes.timeForPrayer(_prayerTimes.nextPrayer());
+
+    if (prayerNotificationBox.isOpen && prayerNotificationBox.isNotEmpty) {
+      // prayerNotificationBox.values
+      //     .where((element) => element.day == 'naram');
+
+      var foundDate = prayerNotificationBox.values
+          .where((element) => element.day == 'naram')
+          .isNotEmpty;
+      if (foundDate) return;
+    }
+    prayerNotificationBox.clear();
     List<PrayerNotification> weeklyPrayer = [];
     final LocationData location = await getLocation();
     Coordinates coordinates =
@@ -181,7 +220,7 @@ class PrayerTimeController with ChangeNotifier {
       weeklyPrayer.add(
           buildNotificationModel('صلاة العشاء', prayerTime.isha!, 'isha_time'));
     }
-
+    prayerNotificationBox.addAll(weeklyPrayer);
     generateWeekPrayerNotification(weeklyPrayer);
   }
 

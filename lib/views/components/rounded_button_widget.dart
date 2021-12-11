@@ -24,15 +24,15 @@ class RoundedButtonWidget extends StatelessWidget {
             BoxShadow(
                 color: Colors.black26, offset: Offset(0, 4), blurRadius: 5.0)
           ],
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          gradient: const LinearGradient(
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
             colors: [
-              Colors.blue.shade400,
-              Colors.blue.shade300,
-              Colors.blue.shade300,
-              Colors.blue.shade300,
-              Colors.blue.shade400,
+              Color(0xff538CB2),
+              Color(0xff6093B4),
+              Color(0xff7EADCC),
+              Color(0xff6093B4),
+              Color(0xff538CB2),
             ],
           ),
           borderRadius: BorderRadius.circular(borderRad ?? 50),

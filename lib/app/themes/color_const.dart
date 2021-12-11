@@ -4,7 +4,8 @@ class ColorConst {
   // static Color secondaryColor = Color.fromRGBO(4, 40, 82, 0.8);
   // static Color lightBlue = Colors.blue.shade300;
   static Color extraLightBlue = Colors.blue.shade200;
-  static Color darkTransparent = Color.fromRGBO(44, 102, 147, 0.6);
+  // static Color darkTransparent = Color.fromRGBO(60, 105, 180, 0.7);
+  static Color darkTransparent = Color(0xff538CB2).withOpacity(0.7);
   //
   // static Color dotColor = isDarkMode
   //     ? Color.fromRGBO(200, 230, 241, 1)
@@ -36,4 +37,16 @@ class ColorConst {
   //   Colors.blue.shade400,
   //   Colors.blue.shade500,
   // ];
+
+  static Color darkCardColor = const Color(0xff111C2E);
+
+  static LinearGradient topCardWidgetGradient = const LinearGradient(
+    begin: Alignment.bottomLeft,
+    end: Alignment.topRight,
+    colors: [
+      Color(0xff7EADCC),
+      Color(0xff538CB2),
+      Color(0xff538CB2),
+    ],
+  );
 }

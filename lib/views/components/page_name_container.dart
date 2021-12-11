@@ -25,37 +25,44 @@ class PageNameContainer extends StatelessWidget {
         pinned: true,
         delegate: SliverAppBarDelegate(
           minHeight: 15.0.h,
-          maxHeight: 25.0.h,
-          child: Container(
-            height: maxHeight,
-            decoration: BoxDecoration(
-              color: const Color(0xff80aaff),
+          maxHeight: 27.0.h,
+          child: Card(
+            elevation: 6,
+            margin: const EdgeInsets.all(0),
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
                 bottom: bottomBorderRad,
               ),
-              image: DecorationImage(
-                image: AssetImage(backgroundImageUrl),
-                fit: BoxFit.fill,
-                colorFilter: ColorFilter.mode(
-                    Colors.blue.withOpacity(0.2), BlendMode.dstIn),
-              ),
             ),
             child: Container(
-              padding: EdgeInsets.only(bottom: 3.h),
               height: maxHeight,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.vertical(
                   bottom: bottomBorderRad,
                 ),
+                image: DecorationImage(
+                  image: AssetImage(backgroundImageUrl),
+                  fit: BoxFit.cover,
+                ),
               ),
-              alignment: Alignment.bottomCenter,
-              child: Text(
-                pageTitle,
-                style: TextStyle(
-                    fontFamily: 'Amiri',
-                    color: Colors.white,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w400),
+              child: Container(
+                padding: EdgeInsets.only(bottom: 3.h),
+                height: maxHeight,
+                decoration: BoxDecoration(
+                  color: ColorConst.darkTransparent,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: bottomBorderRad,
+                  ),
+                ),
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  pageTitle,
+                  style: TextStyle(
+                      fontFamily: 'Almarai',
+                      color: Colors.white,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w400),
+                ),
               ),
             ),
           ),

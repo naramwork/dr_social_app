@@ -1,82 +1,45 @@
-import 'package:dots_indicator/dots_indicator.dart';
-import 'package:dr_social/app/themes/color_const.dart';
-import 'package:dr_social/controllers/color_mode.dart';
-import 'package:dr_social/views/components/page_name_container.dart';
+import 'package:dr_social/views/components/static_page_name_container.dart';
+import 'package:dr_social/views/pages/register/sign_up_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class TestPage extends StatefulWidget {
-  static const routeName = '/test_up';
-
-  @override
-  State<TestPage> createState() => _TestPageState();
-}
-
-class _TestPageState extends State<TestPage> {
-  final PageController controller = PageController(initialPage: 0);
-
-  double currentPage = 0.0;
-
-  final List<Widget> pages = [];
-
-  void changPage(double position) {
-    controller.animateToPage(
-      position.toInt(),
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeIn,
-    );
-    currentPage = position;
-    setState(() {});
-  }
+class TestPage extends StatelessWidget {
+  static String routeName = '/test_page';
+  const TestPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            PageNameContainer(
-              pageTitle: '(مواعيد الصلاة)',
-              minHeight: 15.0.h,
-              maxHeight: 25.0.h,
-              bottomBorderRad: const Radius.elliptical(100, 40),
-              backgroundImageUrl: 'assets/images/mosque.jpg',
-            ),
-          ];
-        },
-        body: Column(
-          children: [
-            Expanded(
-              child: PageView(
-                  scrollDirection: Axis.horizontal,
-                  controller: controller,
-                  children: pages),
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            DotsIndicator(
-              dotsCount: pages.length,
-              position: currentPage,
-              decorator: DotsDecorator(
-                size: Size(11.0.w, 10),
-                activeSize: Size(11.0.w, 10),
-                color: context.watch<ColorMode>().dotColor,
-                activeColor: context.watch<ColorMode>().dotActiveColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                activeShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  side: BorderSide(
-                      color: context.watch<ColorMode>().dotColor, width: 0.2),
-                ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              StaticPageNameContainer(
+                pageTitle: 'تسجيل حساب',
+                maxHeight: 25.0.h,
+                imageAlignment: Alignment.bottomRight,
+                bottomBorderRad: const Radius.elliptical(100, 40),
+                backgroundImageUrl: 'assets/images/mosque.png',
               ),
-              onTap: changPage,
-            ),
-          ],
-        ),
+              Expanded(
+                child: SignUpPageView(),
+              ),
+            ],
+          ),
+          Positioned(
+              top: 6.h,
+              right: 6.w,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.close_outlined,
+                  size: 35,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )),
+        ],
       ),
     );
   }

@@ -1,10 +1,18 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:dr_social/app/helper_files/functions.dart';
 import 'package:dr_social/controllers/color_mode.dart';
+import 'package:dr_social/controllers/user_controller.dart';
 import 'package:dr_social/views/components/layout/app_drawer.dart';
 import 'package:dr_social/views/components/layout/custom_bottom_app_bar.dart';
 import 'package:dr_social/views/components/layout/fap.dart';
+import 'package:dr_social/views/pages/content_pages/all_content_page.dart';
 import 'package:dr_social/views/pages/home_page.dart';
+import 'package:dr_social/views/pages/marriage_page.dart';
+import 'package:dr_social/views/pages/no_internet_page.dart';
 import 'package:dr_social/views/pages/prayer_times_page.dart';
+import 'package:dr_social/views/pages/quran/quran_page.dart';
+import 'package:dr_social/views/pages/register/login_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:provider/provider.dart';
@@ -22,11 +30,10 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
-    HomePage(),
-    // PageOne(),
-    HomePage(),
-    HomePage(),
-    PrayerTimesPage(),
+    const HomePage(),
+    const QuranPage(),
+    const AllContentPage(),
+    const PrayerTimesPage(),
   ];
 
   void changeTheme(BuildContext context) async {
@@ -48,7 +55,7 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     final route = ModalRoute.of(context);
     if (route != null) {
       final args = route.settings.arguments;
@@ -56,6 +63,11 @@ class _MainLayoutState extends State<MainLayout> {
         _selectedIndex = args as int;
       }
     }
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
       resizeToAvoidBottomInset: false,
@@ -99,10 +111,15 @@ class _MainLayoutState extends State<MainLayout> {
       drawer: AppDrawer(
         selectedIndex: _selectedIndex,
       ),
-      body: _pages[widget.index ?? _selectedIndex],
+      body: (_selectedIndex == -1)
+          ? const NoInternetPage()
+          : IndexedStack(
+              index: widget.index ?? _selectedIndex,
+              children: _pages,
+            ),
       floatingActionButton: FAP(
         onPressed: () {
-          changeTheme(context);
+          gotToMarriagePage(context);
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

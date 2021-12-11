@@ -16,11 +16,11 @@ class FAP extends StatelessWidget {
         onPressed();
       },
       child: Container(
+        padding: EdgeInsets.all(10),
         width: 60,
         height: 60,
-        child: const Icon(
-          Icons.add,
-          size: 40,
+        child: const ImageIcon(
+          AssetImage('assets/images/ring.png'),
         ),
         decoration: BoxDecoration(
           shape: BoxShape.circle,

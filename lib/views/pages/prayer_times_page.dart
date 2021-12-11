@@ -1,12 +1,15 @@
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:dr_social/app/helper_files/app_const.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/prayer_time_controller.dart';
 import 'package:dr_social/models/prayer_hour.dart';
+import 'package:dr_social/models/prayer_notification.dart';
 
 import 'package:dr_social/views/components/prayer_time_container.dart';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -73,21 +76,16 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
       ),
     ];
 
-    context.watch<PrayerTimeController>().setWeeklyPrayerTime();
+    checkAndAddNotifications(context);
   }
 
-  void ndfj() async {
-    List<NotificationModel> lid =
-        await AwesomeNotifications().listScheduledNotifications();
-
-    for (NotificationModel ni in lid) {
-      print(ni.schedule);
-    }
+  void checkAndAddNotifications(BuildContext context) async {
+    await Hive.openBox<PrayerNotification>(kNotificationBoxName);
+    context.read<PrayerTimeController>().setWeeklyPrayerTime();
   }
 
   @override
   Widget build(BuildContext context) {
-    ndfj();
     return Stack(
       children: [
         Center(
@@ -95,7 +93,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
             elevation: 4,
             margin: const EdgeInsets.all(0),
             child: Container(
-              width: 75.w,
+              width: 85.w,
               height: double.infinity,
               color: context.watch<ColorMode>().isDarkMode
                   ? const Color(0xff111C2E)
@@ -112,7 +110,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                 minHeight: 15.0.h,
                 maxHeight: 25.0.h,
                 bottomBorderRad: const Radius.elliptical(100, 40),
-                backgroundImageUrl: 'assets/images/prayer_times_bg.png',
+                backgroundImageUrl: 'assets/images/duas_bg.png',
               ),
               SliverPadding(
                   padding: EdgeInsets.fromLTRB(3.w, 5.h, 3.w, 10.h),

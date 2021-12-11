@@ -40,7 +40,8 @@ class _ThemeWidgetState extends State<ThemeWidget> {
     primaryColor: const Color(0xFF184B6C),
     primaryColorDark: Color(0xFF043453),
     bottomAppBarColor: Colors.white,
-    canvasColor: const Color.fromARGB(255, 0, 10, 22),
+    unselectedWidgetColor: Colors.white60,
+    scaffoldBackgroundColor: const Color.fromARGB(255, 0, 10, 22),
     fontFamily: 'Tajawal',
     textTheme: TextTheme(
       headline2: TextStyle(

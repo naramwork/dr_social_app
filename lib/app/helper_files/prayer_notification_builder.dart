@@ -1,10 +1,6 @@
-import 'dart:math';
-
-import 'package:adhan_dart/adhan_dart.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:dr_social/models/prayer_notification.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 Future<void> createPrayerNotification(
     PrayerNotification prayerNotification) async {
@@ -14,12 +10,11 @@ Future<void> createPrayerNotification(
     content: NotificationContent(
         id: prayerNotification.id,
         channelKey: prayerNotification.channelKey,
-        title: 'تذكير',
-        body:
-            'موعد ${prayerNotification.salahName} ليوم ${prayerNotification.day}الساعة ${prayerNotification.salahTime}',
+        title: 'صلاة',
+        body: 'حان الأن موعد ${prayerNotification.salahName}',
         backgroundColor: const Color(0xFF184B6C),
         color: Colors.white,
-        category: NotificationCategory.Reminder),
+        category: NotificationCategory.Alarm),
     schedule:
         NotificationCalendar.fromDate(date: prayerNotification.date.toLocal()),
   );
@@ -44,6 +39,7 @@ NotificationChannel setNewPrayerChannel(
         channelDescription: 'التذكير بمواعيد الصلاة',
         ledColor: Colors.white,
         defaultColor: Colors.blue,
-        importance: NotificationImportance.High,
+        importance: NotificationImportance.Max,
         playSound: true,
-        channelGroupKey: 'prayer_times_group');
+        channelGroupKey: 'prayer_times_group',
+        soundSource: 'resource://raw/res_azan');

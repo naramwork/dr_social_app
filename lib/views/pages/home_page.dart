@@ -1,14 +1,20 @@
-import 'dart:math';
-
-import 'package:dr_social/app/themes/color_const.dart';
-import 'package:dr_social/controllers/color_mode.dart';
-import 'package:dr_social/views/components/home_page/card_widget.dart';
+import 'package:dr_social/app/helper_files/functions.dart';
+import 'package:dr_social/controllers/update_content_controler.dart';
+import 'package:dr_social/models/verse.dart';
+import 'package:dr_social/views/components/content_card_components/card_widget.dart';
+import 'package:dr_social/views/components/content_card_components/spinner_bottom_widget.dart';
+import 'package:dr_social/views/components/content_card_components/triangle_top_widget.dart';
+import 'package:dr_social/views/components/content_card_components/verse_top_widget.dart';
+import 'package:dr_social/views/components/home_page/azan_time_home_card.dart';
 import 'package:dr_social/views/components/home_page/main_home_card.dart';
 import 'package:dr_social/views/components/rounded_button_widget.dart';
+import 'package:dr_social/views/main_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+
+import '../components/pages_bg_rectangle.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,135 +23,113 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Center(
-          child: Card(
-            elevation: 4,
-            margin: const EdgeInsets.all(0),
-            child: Container(
-              width: 85.w,
-              height: double.infinity,
-              color: context.watch<ColorMode>().isDarkMode
-                  ? Color(0xff111C2E)
-                  : Colors.white,
-            ),
-          ),
-        ),
+        const PagesBgRectangle(),
         SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.5.w, vertical: 5.0.w),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const MainHomeCard(),
                 SizedBox(
                   height: 6.h,
                 ),
-                Card(
-                  elevation: 6,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40.0),
-                  ),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40.0),
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(40.0),
-                                color: ColorConst.darkTransparent),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 2.h,
-                            horizontal: 10.w,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'تبقى 5 دقائق لآذان المغرب ',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline1!
-                                      .copyWith(fontSize: 16),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'موعد الآذان 15:02 م',
-                                  style: Theme.of(context).textTheme.subtitle2,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                const AzanTimeHomeCard(),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: RoundedButtonWidget(
-                    label: Text(
+                    label: const Text(
                       'عرض التفاصيل',
-                      style: Theme.of(context).textTheme.button,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
                     ),
                     width: 45.w,
-                    onpressed: () {},
+                    onpressed: () {
+                      Navigator.of(context).pushReplacementNamed(
+                          MainLayout.routeName,
+                          arguments: 3);
+                    },
                   ),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
                 CardWidget(
-                  topWidget: Positioned(
-                    top: -50,
-                    right: 10.w,
-                    child: Transform.rotate(
-                      angle: pi / 4,
-                      child: Container(
-                        width: 90,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.blue.shade300,
-                        ),
-                        child: Transform.rotate(
-                          angle: -pi / 4,
-                          child: Center(
-                            child: Text(
-                              'حديث \nاليوم',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline1!
-                                  .copyWith(fontSize: 14),
-                            ),
-                          ),
+                  hieght: (90 - 50),
+                  topWidget: const CardTriangleTopWidget(
+                    title: 'حديث \nاليوم',
+                  ),
+                  botWidget: SpinnerBottomWidget(
+                    content: context
+                            .watch<UpdateContentController>()
+                            .hadithOfTheDay
+                            ?.content ??
+                        '',
+                  ),
+                ),
+                SizedBox(
+                  height: 6.0.h,
+                ),
+                Consumer<UpdateContentController>(
+                  builder: (BuildContext context, value, Widget? child) {
+                    Verse? verse = value.verseOfTheDay;
+                    return CardWidget(
+                      hieght: (6.h - 3.h),
+                      topWidget: Positioned(
+                        top: -3.h,
+                        left: 20.w,
+                        right: 20.w,
+                        child: VerseTopWidget(
+                          surah: verse?.surah ?? '',
+                          part: verse?.part ?? '',
                         ),
                       ),
+                      botWidget: SpinnerBottomWidget(
+                        content: verse?.content ?? '',
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: RoundedButtonWidget(
+                    label: const Text(
+                      'ايجاد شريك',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
                     ),
+                    width: 45.w,
+                    onpressed: () {
+                      gotToMarriagePage(context);
+                    },
                   ),
-                  botWidget: Center(
-                    child: Text(
-                      'وَقُلِ الْحَمْدُ لِلَّهِ الَّذِي لَمْ يَتَّخِذْ وَلَدًا وَلَمْ يَكُنْ لَهُ شَرِيكٌ فِي الْمُلْكِ وَلَمْ يَكُنْ لَهُ وَلِيٌّ مِنَ الذُّلِّ وَكَبِّرْهُ تَكْبِيرًا',
-                      style: Theme.of(context).textTheme.headline1,
-                      textAlign: TextAlign.center,
-                    ),
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
+                CardWidget(
+                  hieght: (90 - 50),
+                  topWidget: const CardTriangleTopWidget(
+                    title: 'دعاء \nاليوم',
+                  ),
+                  botWidget: SpinnerBottomWidget(
+                    content: context
+                            .watch<UpdateContentController>()
+                            .duaOfTheDay
+                            ?.content ??
+                        '',
                   ),
                 ),
                 SizedBox(
                   height: 10.0.h,
-                )
+                ),
               ],
             ),
           ),
