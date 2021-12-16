@@ -36,15 +36,6 @@ class _MainLayoutState extends State<MainLayout> {
     const PrayerTimesPage(),
   ];
 
-  void changeTheme(BuildContext context) async {
-    AdaptiveTheme.of(context).toggleThemeMode();
-    final savedThemeMode = await AdaptiveTheme.getThemeMode();
-
-    context
-        .read<ColorMode>()
-        .changeColorMode(savedThemeMode == AdaptiveThemeMode.dark);
-  }
-
   void selectPage(int index, BuildContext context) {
     setState(() {
       _selectedIndex = index;
@@ -110,6 +101,7 @@ class _MainLayoutState extends State<MainLayout> {
       ),
       drawer: AppDrawer(
         selectedIndex: _selectedIndex,
+        onTap: selectPage,
       ),
       body: (_selectedIndex == -1)
           ? const NoInternetPage()

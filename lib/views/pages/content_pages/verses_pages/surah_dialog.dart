@@ -75,7 +75,7 @@ class SurahDialog extends StatelessWidget {
                           SizedBox(
                             height: 5.h,
                           ),
-                          Text(verse.content,
+                          SelectableText(verse.content,
                               style:
                                   getTextStyle(context, hieght: 1.8, font: 16),
                               textAlign: TextAlign.start),

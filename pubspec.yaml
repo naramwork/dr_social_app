@@ -40,6 +40,9 @@ dependencies:
   map_launcher: ^2.1.1
   html: ^0.15.0
   quran: ^1.0.4
+  firebase_core: ^1.10.5
+  firebase_messaging: ^11.2.3
+  shared_preferences: ^2.0.11
 
 dev_dependencies:
   flutter_test:

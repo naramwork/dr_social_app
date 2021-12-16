@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // }
 
-    //ridirectBaseOnInternetConnection();
+    ridirectBaseOnInternetConnection();
     // int returnOrder(String){
 
     // }

@@ -1,3 +1,4 @@
+import 'package:dr_social/app/helper_files/functions.dart';
 import 'package:dr_social/app/themes/color_const.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class FAP extends StatelessWidget {
     return FloatingActionButton(
       //Floating action button on Scaffold
       onPressed: () {
-        onPressed();
+        gotToMarriagePage(context);
       },
       child: Container(
         padding: EdgeInsets.all(10),

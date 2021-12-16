@@ -112,7 +112,7 @@ class SurahContainer extends StatelessWidget {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 5),
-                          child: Text(surah.content,
+                          child: SelectableText(surah.content,
                               textAlign: TextAlign.right,
                               style: textStyle(context)),
                         ),

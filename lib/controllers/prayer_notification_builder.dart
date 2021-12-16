@@ -1,10 +1,12 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:dr_social/app/helper_files/app_const.dart';
 import 'package:dr_social/models/prayer_notification.dart';
 import 'package:flutter/material.dart';
 
 Future<void> createPrayerNotification(
     PrayerNotification prayerNotification) async {
-  await AwesomeNotifications().cancelAll();
+  await AwesomeNotifications()
+      .cancelNotificationsByGroupKey(kPrayerChannelGroupKey);
 
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
@@ -25,7 +27,7 @@ int createUniqueId(DateTime dateTime) {
 }
 
 void generateWeekPrayerNotification(
-    List<PrayerNotification> prayerNotifications) {
+    List<PrayerNotification> prayerNotifications) async {
   for (var notification in prayerNotifications) {
     createPrayerNotification(notification);
   }

@@ -2,7 +2,7 @@
     package="com.example.dr_social">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="dr_social"
+        android:label="كل يوم آية"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"

@@ -14,7 +14,7 @@ class BottomWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-      child: Text(content,
+      child: SelectableText(content,
           style: TextStyle(
             height: 1.5,
             color: context.watch<ColorMode>().isDarkMode

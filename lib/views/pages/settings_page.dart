@@ -1,26 +1,47 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:dr_social/app/helper_files/app_const.dart';
 import 'package:dr_social/app/helper_files/functions.dart';
-import 'package:dr_social/app/helper_files/snack_bar.dart';
 import 'package:dr_social/controllers/color_mode.dart';
-import 'package:dr_social/controllers/user_controller.dart';
 import 'package:dr_social/views/components/layout/custom_bottom_app_bar.dart';
 import 'package:dr_social/views/components/layout/fap.dart';
-import 'package:dr_social/views/components/register/rounded_text_field.dart';
-import 'package:dr_social/views/components/rounded_button_widget.dart';
-import 'package:dr_social/views/components/static_page_name_container.dart';
+import 'package:dr_social/views/components/name_header_card.dart';
 import 'package:dr_social/views/main_layout.dart';
-import 'package:dr_social/views/pages/register/register_dialog.dart';
-import 'package:dr_social/views/pages/register/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingsPage extends StatelessWidget {
-  static String routeName = 'login_page';
+class SettingsPage extends StatefulWidget {
+  static String routeName = 'settings_page';
   const SettingsPage({Key? key}) : super(key: key);
 
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
   void selectPage(int index, BuildContext context) {
-    Navigator.of(context).pushNamed(MainLayout.routeName, arguments: index);
+    Navigator.of(context)
+        .pushReplacementNamed(MainLayout.routeName, arguments: index);
+  }
+
+  late SharedPreferences prefs;
+  bool isSwitched = true;
+  @override
+  void initState() {
+    setSwitchValue();
+
+    super.initState();
+  }
+
+  void setSwitchValue() async {
+    prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      isSwitched = prefs.getBool(isPrayerNotificationActiveKey) ?? false;
+    });
   }
 
   @override
@@ -29,53 +50,87 @@ class SettingsPage extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: Column(children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: const LinearGradient(
-                    begin: Alignment.centerRight,
-                    end: Alignment.centerLeft,
-                    colors: [
-                      Color(0xff538CB2),
-                      Color(0xff538CB2),
-                      Color(0xff538CB2),
-                    ],
-                  )),
-              child: Stack(
+        child: Column(
+          children: [
+            const NameHeaderCard(title: 'الإعدادات'),
+            SizedBox(
+              height: 4.h,
+            ),
+            SettingCardContainer(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    height: 7.h,
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    child: Text(
-                      'الإعدادت   ',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18),
-                      textAlign: TextAlign.center,
-                    ),
+                  AutoSizeText(
+                    'التنبيه بمواعيد الصلاة',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color: context.watch<ColorMode>().isDarkMode
+                            ? Colors.white
+                            : Colors.black),
+                    maxLines: 1,
                   ),
-                  Positioned(
-                    left: 0,
-                    child: SvgPicture.asset(
-                      'assets/images/lift.svg',
-                      fit: BoxFit.fill,
-                      width: 14.w,
-                    ),
+                  Switch(
+                    value: isSwitched,
+                    onChanged: (value) {
+                      prefs.setBool(isPrayerNotificationActiveKey, value);
+                      setState(() {
+                        isSwitched = value;
+                      });
+                    },
+                    activeTrackColor: Colors.lightGreenAccent,
+                    activeColor: Colors.green,
                   ),
                 ],
               ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.only(left: 5.w),
-          ),
-        ]),
+            SizedBox(
+              height: 2.h,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 10.w),
+              child: Card(
+                elevation: 4,
+                shape: const RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.horizontal(left: Radius.circular(40)),
+                ),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.horizontal(
+                          left: Radius.circular(40)),
+                      color: context.watch<ColorMode>().isDarkMode
+                          ? const Color(0xFF184B6C)
+                          : Colors.grey.shade100),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AutoSizeText(
+                        'تفعيل الوضع الليلي',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: context.watch<ColorMode>().isDarkMode
+                                ? Colors.white
+                                : Colors.black),
+                        maxLines: 1,
+                      ),
+                      Switch(
+                        value: context.watch<ColorMode>().isDarkMode,
+                        onChanged: (value) {
+                          changeTheme(context);
+                        },
+                        activeTrackColor: Colors.lightGreenAccent,
+                        activeColor: Colors.green,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FAP(
         onPressed: () {
@@ -88,5 +143,44 @@ class SettingsPage extends StatelessWidget {
         selectPage: selectPage,
       ),
     );
+  }
+
+  void changeTheme(BuildContext context) async {
+    bool isDarkMode = context.read<ColorMode>().isDarkMode;
+    if (isDarkMode) {
+      AdaptiveTheme.of(context).setLight();
+    } else {
+      AdaptiveTheme.of(context).setDark();
+    }
+    final savedThemeMode = await AdaptiveTheme.getThemeMode();
+
+    context
+        .read<ColorMode>()
+        .changeColorMode(savedThemeMode == AdaptiveThemeMode.dark);
+  }
+}
+
+class SettingCardContainer extends StatelessWidget {
+  final Widget child;
+  const SettingCardContainer({Key? key, required this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(left: 10.w),
+        child: Card(
+            elevation: 4,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.horizontal(left: Radius.circular(40)),
+            ),
+            child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.horizontal(
+                        left: Radius.circular(40)),
+                    color: context.watch<ColorMode>().isDarkMode
+                        ? const Color(0xFF184B6C)
+                        : Colors.grey.shade100),
+                child: child)));
   }
 }

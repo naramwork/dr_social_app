@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dr_social/app/helper_files/app_const.dart';
+import 'package:dr_social/controllers/content_notification_builder.dart';
 import 'package:dr_social/app/helper_files/functions.dart';
 import 'package:dr_social/models/dua.dart';
 import 'package:dr_social/models/hadith.dart';
@@ -269,6 +270,7 @@ class UpdateContentController extends ChangeNotifier {
                   .where((element) => element.order >= startAt)
                   .toList() +
               versesList.where((element) => element.order < startAt).toList();
+          generateWeekVersesNotification(_verses.take(3).toList());
 
           _verseOfTheDay =
               versesList.firstWhere((verse) => verse.order >= startAt);
@@ -277,7 +279,16 @@ class UpdateContentController extends ChangeNotifier {
           // DateTime date = DateTime.parse(content.lastUpdate);
           // int startAt = content.startAt + daysBetween(date, DateTime.now());
 
-          _duas = duaList;
+          _duas = duaList
+                  .where((element) =>
+                      element.order >= DateTime.now().weekday &&
+                      DateTime.now().weekday < 8)
+                  .toList() +
+              duaList
+                  .where((element) => element.order < DateTime.now().weekday)
+                  .toList();
+
+          generateWeekDuaNotification(duaList.take(3).toList());
 
           _duaOfTheDay =
               duaList.firstWhere((dua) => dua.order == DateTime.now().weekday);
@@ -290,6 +301,9 @@ class UpdateContentController extends ChangeNotifier {
                   .where((element) => element.order >= startAt)
                   .toList() +
               hadithList.where((element) => element.order < startAt).toList();
+
+          generateWeekHadithNotification(_hadiths.take(3).toList());
+
           _hadithOfTheDay =
               hadithList.firstWhere((hadith) => hadith.order >= startAt);
           break;

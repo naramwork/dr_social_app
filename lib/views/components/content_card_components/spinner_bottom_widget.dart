@@ -21,7 +21,7 @@ class SpinnerBottomWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 6.h),
       child: content == ''
           ? JumpingDotsProgressIndicator(
               color: context.watch<ColorMode>().isDarkMode
@@ -29,7 +29,7 @@ class SpinnerBottomWidget extends StatelessWidget {
                   : Colors.black,
               fontSize: 30.sp,
             )
-          : Text(
+          : SelectableText(
               content.trim(),
               style: style(context),
               textAlign: TextAlign.center,

@@ -1,12 +1,13 @@
+import 'package:dr_social/app/helper_files/functions.dart';
 import 'package:dr_social/app/helper_files/snack_bar.dart';
 import 'package:dr_social/app/themes/color_const.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/user_controller.dart';
 import 'package:dr_social/models/user.dart';
 import 'package:dr_social/views/pages/register/login_page.dart';
-import 'package:dr_social/views/pages/register/sign_up_page.dart';
+
 import 'package:dr_social/views/pages/settings_page.dart';
-import 'package:dr_social/views/test_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -77,35 +78,46 @@ class AppDrawer extends StatelessWidget {
                         outlineIcon: Icons.home_outlined,
                         fillIcon: Icons.home,
                         label: 'الرئيسية',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pop(context);
+                          onTap!(0, context);
+                        },
                       ), // 0
 
                       MenuListITem(
-                        itemIndex: 1,
+                        itemIndex: 10,
                         selectedIndex: selectedIndex,
                         outlineIcon: Icons.favorite_outline,
                         fillIcon: Icons.favorite,
                         label: 'ايجاد شريك',
-                        onTap: () {},
+                        onTap: () {
+                          gotToMarriagePage(context);
+                        },
                       ), // 1
                       MenuListITem(
-                        itemIndex: 2,
+                        itemIndex: 1,
                         selectedIndex: selectedIndex,
                         outlineIcon: Icons.play_arrow_outlined,
                         fillIcon: Icons.play_arrow,
                         label: 'آيات قرآنية',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pop(context);
+                          onTap!(1, context);
+                        },
                       ), // 2
                       MenuListITem(
-                        itemIndex: 3,
+                        itemIndex: 2,
                         selectedIndex: selectedIndex,
                         outlineIcon: Icons.home_outlined,
                         fillIcon: Icons.home,
                         label: 'الحديث الشريف',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pop(context);
+                          onTap!(2, context);
+                        },
                       ), // 3
                       MenuListITem(
-                        itemIndex: 4,
+                        itemIndex: 11,
                         selectedIndex: selectedIndex,
                         outlineIcon: Icons.settings_outlined,
                         fillIcon: Icons.settings,
@@ -116,12 +128,15 @@ class AppDrawer extends StatelessWidget {
                         },
                       ), // 4
                       MenuListITem(
-                        itemIndex: 1,
+                        itemIndex: 3,
                         selectedIndex: selectedIndex,
                         outlineIcon: Icons.home_outlined,
                         fillIcon: Icons.home,
                         label: 'مواعيد الصلاة',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pop(context);
+                          onTap!(3, context);
+                        },
                       ), // 5
                       Divider(
                         color: Colors.grey,
@@ -130,7 +145,7 @@ class AppDrawer extends StatelessWidget {
                         endIndent: 5.w,
                       ),
                       MenuListITem(
-                        itemIndex: 1,
+                        itemIndex: 13,
                         selectedIndex: selectedIndex,
                         outlineIcon: Icons.error_outline,
                         fillIcon: Icons.error,
@@ -138,7 +153,7 @@ class AppDrawer extends StatelessWidget {
                         onTap: () {},
                       ), // 6
                       MenuListITem(
-                        itemIndex: 7,
+                        itemIndex: 14,
                         selectedIndex: selectedIndex,
                         outlineIcon: Icons.help_outline,
                         fillIcon: Icons.help,

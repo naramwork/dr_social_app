@@ -1,7 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:dr_social/app/helper_files/app_const.dart';
-import 'package:dr_social/app/helper_files/prayer_notification_builder.dart';
+import 'package:dr_social/controllers/prayer_notification_builder.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/prayer_time_controller.dart';
 import 'package:dr_social/controllers/update_content_controler.dart';
@@ -29,6 +29,8 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'controllers/content_notification_builder.dart';
+import 'controllers/notification_controller.dart';
 import 'views/pages/marriage_page.dart';
 
 void main() async {
@@ -42,14 +44,38 @@ void main() async {
         setNewPrayerChannel(name: 'صلاة العصر', key: 'asr_time'),
         setNewPrayerChannel(name: 'صلاة المغرب', key: 'magrb_time'),
         setNewPrayerChannel(name: 'صلاة العشاء', key: 'isha_time'),
+        setNewContentChannel(
+            name: 'الآية اليومية',
+            key: kVersesChannleKey,
+            sound: 'resource://raw/res_verse'),
+        setNewContentChannel(
+            name: 'الدعاء اليومي',
+            key: kDuasChannleKey,
+            sound: 'resource://raw/res_dua'),
+        setNewContentChannel(
+            name: 'الحديث الشريف',
+            key: kHadithChannleKey,
+            sound: 'resource://raw/res_hadith'),
+        NotificationChannel(
+            channelKey: kFcmChannleKey,
+            channelName: 'اشعارات عامة',
+            channelDescription: 'الإشعارات المرسلة من فريق الإدارة',
+            ledColor: Colors.white,
+            defaultColor: Colors.blue,
+            importance: NotificationImportance.Max,
+            playSound: true)
       ],
       channelGroups: [
         NotificationChannelGroup(
-            channelGroupkey: 'prayer_times_group',
-            channelGroupName: 'مواعيد الصلاة')
+            channelGroupkey: kPrayerChannelGroupKey,
+            channelGroupName: 'مواعيد الصلاة'),
+        NotificationChannelGroup(
+            channelGroupkey: kContentChannelGroupKey,
+            channelGroupName: 'الإشعارات اليومية')
       ]);
 
   WidgetsFlutterBinding.ensureInitialized();
+  NotificationController();
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
   runApp(MyApp(

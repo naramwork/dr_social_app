@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:dr_social/app/helper_files/app_const.dart';
-import 'package:dr_social/app/helper_files/prayer_notification_builder.dart';
+import 'package:dr_social/controllers/prayer_notification_builder.dart';
 import 'package:dr_social/models/arabic_date.dart';
 import 'package:dr_social/models/prayer_notification.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +12,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PrayerTimeController with ChangeNotifier {
   late ArabicDate _arabicDate;
@@ -83,7 +84,7 @@ class PrayerTimeController with ChangeNotifier {
 
   String getArabicAzanName(String prayer) {
     if (prayer == Prayer.Fajr) {
-      return 'فجر';
+      return 'الفجر';
     } else if (prayer == Prayer.Sunrise) {
       return 'شروق الشمس';
     } else if (prayer == Prayer.Dhuhr) {
@@ -95,9 +96,9 @@ class PrayerTimeController with ChangeNotifier {
     } else if (prayer == Prayer.Isha) {
       return 'العشاء';
     } else if (prayer == Prayer.IshaBefore) {
-      return 'قبل العشاء';
+      return 'العشاء';
     } else if (prayer == Prayer.FajrAfter) {
-      return 'بعد الفجر';
+      return 'الفجر';
     } else {
       return '';
     }
@@ -105,8 +106,6 @@ class PrayerTimeController with ChangeNotifier {
 
   String skipPrayer(String nextPrye) {
     if (nextPrye == Prayer.Sunrise) {
-      return Prayer.Dhuhr;
-    } else if (nextPrye == Prayer.FajrAfter) {
       return Prayer.Dhuhr;
     } else if (nextPrye == Prayer.IshaBefore) {
       return Prayer.Isha;
@@ -183,21 +182,25 @@ class PrayerTimeController with ChangeNotifier {
   }
 
   void setWeeklyPrayerTime() async {
+    // check if the user cancel all prayer notificaiton from settings page
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isActive = prefs.getBool(isPrayerNotificationActiveKey) ?? true;
+    if (!isActive) return;
+
     Box prayerNotificationBox =
         Hive.box<PrayerNotification>(kNotificationBoxName);
 
-    DateTime? azanTime = _prayerTimes.timeForPrayer(_prayerTimes.nextPrayer());
-
     if (prayerNotificationBox.isOpen && prayerNotificationBox.isNotEmpty) {
-      // prayerNotificationBox.values
-      //     .where((element) => element.day == 'naram');
-
-      var foundDate = prayerNotificationBox.values
-          .where((element) => element.day == 'naram')
-          .isNotEmpty;
-      if (foundDate) return;
+      // check to see if the today date is already schadule
+      PrayerNotification? foundDate = prayerNotificationBox.values.first;
+      if (foundDate != null &&
+          foundDate.day == DateFormat.EEEE('ar_Dz').format(DateTime.now())) {
+        return;
+      }
     }
+
     prayerNotificationBox.clear();
+
     List<PrayerNotification> weeklyPrayer = [];
     final LocationData location = await getLocation();
     Coordinates coordinates =
@@ -205,20 +208,30 @@ class PrayerTimeController with ChangeNotifier {
     CalculationParameters params = CalculationMethod.MuslimWorldLeague();
     params.madhab = Madhab.Shafi;
 
-    for (int i = 0; i <= 6; i++) {
+    for (int i = 0; i <= 2; i++) {
       DateTime day = DateTime.now().add(Duration(days: i));
       PrayerTimes prayerTime = PrayerTimes(coordinates, day, params);
 
-      weeklyPrayer.add(
-          buildNotificationModel('صلاة الفجر', prayerTime.fajr!, 'fajer_time'));
-      weeklyPrayer.add(buildNotificationModel(
-          'صلاة الظهر', prayerTime.dhuhr!, 'duhar_time'));
-      weeklyPrayer.add(
-          buildNotificationModel('صلاة العصر', prayerTime.asr!, 'asr_time'));
-      weeklyPrayer.add(buildNotificationModel(
-          'صلاة المغرب', prayerTime.maghrib!, 'magrb_time'));
-      weeklyPrayer.add(
-          buildNotificationModel('صلاة العشاء', prayerTime.isha!, 'isha_time'));
+      if (prefs.getBool(isFajerNotificationActiveKey) ?? true) {
+        weeklyPrayer.add(buildNotificationModel(
+            'صلاة الفجر', prayerTime.fajr!, 'fajer_time'));
+      }
+      if (prefs.getBool(isDuharNotificationActiveKey) ?? true) {
+        weeklyPrayer.add(buildNotificationModel(
+            'صلاة الظهر', prayerTime.dhuhr!, 'duhar_time'));
+      }
+      if (prefs.getBool(isAsrNotificationActiveKey) ?? true) {
+        weeklyPrayer.add(
+            buildNotificationModel('صلاة العصر', prayerTime.asr!, 'asr_time'));
+      }
+      if (prefs.getBool(isMagrbNotificationActiveKey) ?? true) {
+        weeklyPrayer.add(buildNotificationModel(
+            'صلاة المغرب', prayerTime.maghrib!, 'magrb_time'));
+      }
+      if (prefs.getBool(isIshaNotificationActiveKey) ?? true) {
+        weeklyPrayer.add(buildNotificationModel(
+            'صلاة العشاء', prayerTime.isha!, 'isha_time'));
+      }
     }
     prayerNotificationBox.addAll(weeklyPrayer);
     generateWeekPrayerNotification(weeklyPrayer);

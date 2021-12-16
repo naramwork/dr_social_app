@@ -17,3 +17,7 @@ void gotToMarriagePage(BuildContext context) {
     Navigator.of(context).pushNamed(MarriagePage.routeName);
   }
 }
+
+int createUniqueId(DateTime dateTime) {
+  return dateTime.millisecondsSinceEpoch.remainder(100000);
+}
