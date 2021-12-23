@@ -1,17 +1,13 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:dr_social/app/helper_files/functions.dart';
-import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/user_controller.dart';
 import 'package:dr_social/views/components/layout/app_drawer.dart';
 import 'package:dr_social/views/components/layout/custom_bottom_app_bar.dart';
 import 'package:dr_social/views/components/layout/fap.dart';
 import 'package:dr_social/views/pages/content_pages/all_content_page.dart';
 import 'package:dr_social/views/pages/home_page.dart';
-import 'package:dr_social/views/pages/marriage_page.dart';
 import 'package:dr_social/views/pages/no_internet_page.dart';
 import 'package:dr_social/views/pages/prayer_times_page.dart';
 import 'package:dr_social/views/pages/quran/quran_page.dart';
-import 'package:dr_social/views/pages/register/login_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -39,9 +35,6 @@ class _MainLayoutState extends State<MainLayout> {
   void selectPage(int index, BuildContext context) {
     setState(() {
       _selectedIndex = index;
-      // ColorConst.isDarkMode = !ColorConst.isDarkMode;
-      // AdaptiveTheme.of(context).toggleThemeMode();
-      // Navigator.of(context).pushNamed(SignUpPage.routeName);
     });
   }
 
@@ -54,6 +47,9 @@ class _MainLayoutState extends State<MainLayout> {
         _selectedIndex = args as int;
       }
     }
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      context.read<UserController>().getLogedinUser();
+    });
     super.didChangeDependencies();
   }
 

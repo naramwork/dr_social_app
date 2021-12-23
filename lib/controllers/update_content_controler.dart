@@ -259,6 +259,8 @@ class UpdateContentController extends ChangeNotifier {
       required List<Verse> versesList,
       required List<Hadith> hadithList,
       required List<Dua> duaList}) {
+    debugPrint('contentInfoList $duaList');
+
     _hadiths = hadithList;
     _duas = duaList;
     for (UpdateContent content in contentInfolist) {

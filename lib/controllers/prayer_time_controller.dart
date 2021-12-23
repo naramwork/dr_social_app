@@ -116,7 +116,7 @@ class PrayerTimeController with ChangeNotifier {
   String nextAzanTime() {
     String time = '';
     DateTime? azanTime = _prayerTimes.timeForPrayer(_prayerTimes.nextPrayer());
-    time = DateFormat.jms('ar_Dz').format(azanTime!.toLocal()).toString();
+    time = DateFormat.jm('ar_Dz').format(azanTime!.toLocal()).toString();
     return 'موعد الآذان $time';
   }
 
@@ -169,16 +169,37 @@ class PrayerTimeController with ChangeNotifier {
           localeIdentifier: 'ar_SA');
       _locationName =
           '${placemarks.first.locality} - ${placemarks.first.country}';
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
     DateTime date = DateTime.now();
 
     Coordinates coordinates =
         Coordinates(location.latitude, location.longitude);
-    CalculationParameters params = CalculationMethod.MuslimWorldLeague();
-    params.madhab = Madhab.Shafi;
-    PrayerTimes prayerTimes = PrayerTimes(coordinates, date, params);
+    CalculationParameters params = await getPrayerCalculationParam();
 
+    PrayerTimes prayerTimes = PrayerTimes(coordinates, date, params);
     return Future.value(prayerTimes);
+  }
+
+  Future setPrayerCalculationParam(bool isShafi) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(kIsShafiKey, isShafi);
+    _prayerTimes = await getPrayerTime();
+    setWeeklyPrayerTime();
+    notifyListeners();
+    return;
+  }
+
+  Future<CalculationParameters> getPrayerCalculationParam() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    CalculationParameters params = CalculationMethod.MuslimWorldLeague();
+    bool isShafi = prefs.getBool(kIsShafiKey) ?? true;
+
+    params.madhab = isShafi ? Madhab.Shafi : Madhab.Hanafi;
+
+    return params;
   }
 
   void setWeeklyPrayerTime() async {
@@ -190,14 +211,14 @@ class PrayerTimeController with ChangeNotifier {
     Box prayerNotificationBox =
         Hive.box<PrayerNotification>(kNotificationBoxName);
 
-    if (prayerNotificationBox.isOpen && prayerNotificationBox.isNotEmpty) {
-      // check to see if the today date is already schadule
-      PrayerNotification? foundDate = prayerNotificationBox.values.first;
-      if (foundDate != null &&
-          foundDate.day == DateFormat.EEEE('ar_Dz').format(DateTime.now())) {
-        return;
-      }
-    }
+    // if (prayerNotificationBox.isOpen && prayerNotificationBox.isNotEmpty) {
+    //   // check to see if the today date is already schadule
+    //   PrayerNotification? foundDate = prayerNotificationBox.values.first;
+    //   if (foundDate != null &&
+    //       foundDate.day == DateFormat.EEEE('ar_Dz').format(DateTime.now())) {
+    //     return;
+    //   }
+    // }
 
     prayerNotificationBox.clear();
 
@@ -205,11 +226,10 @@ class PrayerTimeController with ChangeNotifier {
     final LocationData location = await getLocation();
     Coordinates coordinates =
         Coordinates(location.latitude, location.longitude);
-    CalculationParameters params = CalculationMethod.MuslimWorldLeague();
-    params.madhab = Madhab.Shafi;
 
-    for (int i = 0; i <= 2; i++) {
+    for (int i = 0; i <= 1; i++) {
       DateTime day = DateTime.now().add(Duration(days: i));
+      CalculationParameters params = await getPrayerCalculationParam();
       PrayerTimes prayerTime = PrayerTimes(coordinates, day, params);
 
       if (prefs.getBool(isFajerNotificationActiveKey) ?? true) {

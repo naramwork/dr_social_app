@@ -1,27 +1,29 @@
-import 'package:country_calling_code_picker/country.dart';
 import 'package:dr_social/controllers/user_controller.dart';
 import 'package:dr_social/views/components/register/next_button.dart';
-import 'package:dr_social/views/components/register/phone_text_field.dart';
+
 import 'package:dr_social/views/components/register/previouse_button.dart';
-import 'package:dr_social/views/components/rounded_button_widget.dart';
+
 import 'package:dr_social/views/components/register/rounded_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class SignUpPageTwo extends StatelessWidget {
-  final Function nextPage;
+class RegisterPageFive extends StatelessWidget {
   final Function previousPage;
-  SignUpPageTwo({Key? key, required this.nextPage, required this.previousPage})
+  final Function nextPage;
+
+  RegisterPageFive(
+      {Key? key, required this.previousPage, required this.nextPage})
       : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
+
   final ScrollController scrollController = ScrollController(
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
+
   final Map<String, String> pageTowUserInfo = {};
-  final Map phoneMap = {};
 
   void setUserInfoMap(BuildContext context) {
     var userInfo = context.watch<UserController>().usetInfo;
@@ -47,56 +49,45 @@ class SignUpPageTwo extends StatelessWidget {
             key: _formKey,
             child: Column(
               children: [
-                PhoneTextField(
-                  hintText: 'رقم الجوال',
-                  icon: Icons.phone_enabled_outlined,
-                  isRequired: true,
-                  initValue: pageTowUserInfo['phoneNumber'] != null
-                      ? pageTowUserInfo['phoneNumber']!.substring(4)
-                      : '',
-                  onSave: (value) {
-                    phoneMap.addAll(value);
-                  },
-                ),
                 RoundedTextField(
-                  hintText: 'الجنسية',
-                  icon: Icons.map_outlined,
+                  hintText: 'الصلاة',
+                  icon: Icons.create_outlined,
                   isRequired: true,
-                  initValue: pageTowUserInfo['nationality'],
+                  initValue: pageTowUserInfo['prayer'],
                   onSave: (value) {
-                    pageTowUserInfo['nationality'] = value;
+                    pageTowUserInfo['prayer'] = value;
                   },
                   suffixIcon: Icons.fiber_manual_record,
                 ),
                 RoundedTextField(
-                  hintText: 'المدينة',
-                  icon: Icons.home_work_outlined,
+                  hintText: 'التدين',
+                  icon: Icons.create_outlined,
                   isRequired: true,
-                  initValue: pageTowUserInfo['city'],
+                  initValue: pageTowUserInfo['religiosity'],
                   onSave: (value) {
-                    pageTowUserInfo['city'] = value;
+                    pageTowUserInfo['religiosity'] = value;
                   },
                   suffixIcon: Icons.fiber_manual_record,
                 ),
                 RoundedTextField(
-                  hintText: 'مكان الإقامة',
-                  imageIcon: 'assets/images/signpost.png',
+                  hintText: 'اللحية',
+                  icon: Icons.create_outlined,
                   isRequired: true,
-                  initValue: pageTowUserInfo['address'],
+                  initValue: pageTowUserInfo['beard'],
                   onSave: (value) {
-                    pageTowUserInfo['address'] = value;
+                    pageTowUserInfo['beard'] = value;
                   },
                   suffixIcon: Icons.fiber_manual_record,
                 ),
                 RoundedTextField(
-                  hintText: 'العمل',
-                  icon: Icons.work_outline,
+                  hintText: 'التدخين',
+                  imageIcon: 'assets/images/smoking.png',
                   isRequired: true,
+                  initValue: pageTowUserInfo['smoking'],
+                  onSave: (value) {
+                    pageTowUserInfo['smoking'] = value;
+                  },
                   isLastInfoucs: true,
-                  initValue: pageTowUserInfo['job'],
-                  onSave: (value) {
-                    pageTowUserInfo['job'] = value;
-                  },
                   suffixIcon: Icons.fiber_manual_record,
                 ),
                 Row(
@@ -122,42 +113,16 @@ class SignUpPageTwo extends StatelessWidget {
   }
 
   void saveForm(BuildContext context) async {
-    //print('phone: $phone');
-
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (phoneMap.isEmpty) {
-        showSnackBar('تأكد من ادخال رقم هاتف صحيح', context);
-      } else {
-        bool phoneSaved = await context
-            .read<UserController>()
-            .addAndValidatePhoneNumber(phoneMap['value'], phoneMap['country']);
-        if (!phoneSaved || phoneMap.isEmpty) {
-          showSnackBar('تأكد من ادخال رقم هاتف صحيح', context);
-        } else {
-          nextPage(); // index of the page
-          context.read<UserController>().addToUserInfo(pageTowUserInfo);
-        }
-      }
+      context.read<UserController>().addToUserInfo(pageTowUserInfo);
+
+      nextPage();
+
+      // index of the page
     } else {
       scrollController.animateTo(0.0,
           duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
     }
-  }
-
-  void showSnackBar(String text, BuildContext context) {
-    SnackBar snackBar = SnackBar(
-      content: Text(
-        text,
-        style: const TextStyle(
-          fontFamily: 'Tajawl',
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      behavior: SnackBarBehavior.floating,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

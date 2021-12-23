@@ -1,11 +1,9 @@
-import 'package:dr_social/app/themes/color_const.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/verses_controller.dart';
 import 'package:dr_social/models/verse.dart';
 import 'package:dr_social/views/components/content_card_components/card_widget.dart';
 import 'package:dr_social/views/components/content_card_components/verse_top_widget.dart';
 
-import 'package:dr_social/views/components/page_name_container.dart';
 import 'package:dr_social/views/components/static_page_name_container.dart';
 
 import 'package:dr_social/views/pages/content_pages/verses_pages/surah_dialog.dart';

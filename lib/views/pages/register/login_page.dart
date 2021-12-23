@@ -8,7 +8,6 @@ import 'package:dr_social/views/components/register/rounded_text_field.dart';
 import 'package:dr_social/views/components/rounded_button_widget.dart';
 import 'package:dr_social/views/components/static_page_name_container.dart';
 import 'package:dr_social/views/main_layout.dart';
-import 'package:dr_social/views/pages/register/register_dialog.dart';
 import 'package:dr_social/views/pages/register/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +15,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class LoginPage extends StatefulWidget {
   static String routeName = 'login_page';
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -84,33 +83,9 @@ class _LoginPageState extends State<LoginPage> {
                             height: 4.h,
                           ),
                           RoundedButtonWidget(
-                            label: const Text('تسجيل دخول'),
-                            width: 50.w,
-                            onpressed: () async {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                                bool isLogin = await context
-                                    .read<UserController>()
-                                    .loginUser(email, password);
-                                if (isLogin) {
-                                  Navigator.pop(context);
-                                } else {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  showSnackBar(
-                                      'تأكد من معلومات الدخول', context);
-                                }
-                              } else {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              }
-                            },
-                          ),
+                              label: const Text('تسجيل دخول'),
+                              width: 50.w,
+                              onpressed: logUserIn),
                           SizedBox(
                             height: 2.h,
                           ),
@@ -160,5 +135,30 @@ class _LoginPageState extends State<LoginPage> {
         selectPage: selectPage,
       ),
     );
+  }
+
+  void logUserIn() async {
+    {
+      setState(() {
+        isLoading = true;
+      });
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
+        bool isLogin =
+            await context.read<UserController>().loginUser(email, password);
+        if (isLogin) {
+          Navigator.pop(context);
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          showSnackBar('تأكد من معلومات الدخول', context);
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 }

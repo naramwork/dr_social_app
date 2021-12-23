@@ -1,4 +1,3 @@
-import 'package:dr_social/app/themes/color_const.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/update_content_controler.dart';
 import 'package:dr_social/models/dua.dart';

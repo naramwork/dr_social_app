@@ -141,6 +141,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onSaved: (save) {
         widget.onSave(save);
       },
+      style: TextStyle(
+          color: context.watch<ColorMode>().isDarkMode
+              ? Colors.white
+              : Colors.black),
       validator: (value) {
         if (widget.isRequired && (value == null || value.isEmpty)) {
           return 'هذا الحقل مطلوب';
@@ -176,7 +180,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           context.watch<ColorMode>().isDarkMode ? Colors.white : Colors.grey,
       autocorrect: false,
       obscureText: isObscureText,
-      maxLength: widget.maxLine,
+      maxLines: widget.maxLine ?? 1,
       decoration: InputDecoration(
         suffixIcon: buildSuffixIcon(),
         contentPadding: EdgeInsets.symmetric(vertical: 3.h),

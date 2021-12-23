@@ -1,13 +1,11 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:dr_social/controllers/color_mode.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ThemeWidget extends StatefulWidget {
   final AdaptiveThemeBuilder builder;
   final AdaptiveThemeMode? savedThemeMode;
-  ThemeWidget({
+  const ThemeWidget({
     Key? key,
     required this.builder,
     this.savedThemeMode,
@@ -38,7 +36,7 @@ class _ThemeWidgetState extends State<ThemeWidget> {
 
   final ThemeData darkTheme = ThemeData(
     primaryColor: const Color(0xFF184B6C),
-    primaryColorDark: Color(0xFF043453),
+    primaryColorDark: const Color(0xFF043453),
     bottomAppBarColor: Colors.white,
     unselectedWidgetColor: Colors.white60,
     scaffoldBackgroundColor: const Color.fromARGB(255, 0, 10, 22),

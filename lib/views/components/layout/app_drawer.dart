@@ -1,9 +1,9 @@
 import 'package:dr_social/app/helper_files/functions.dart';
-import 'package:dr_social/app/helper_files/snack_bar.dart';
 import 'package:dr_social/app/themes/color_const.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/user_controller.dart';
 import 'package:dr_social/models/user.dart';
+import 'package:dr_social/views/pages/edit_user_page.dart';
 import 'package:dr_social/views/pages/register/login_page.dart';
 
 import 'package:dr_social/views/pages/settings_page.dart';
@@ -42,29 +42,59 @@ class AppDrawer extends StatelessWidget {
                 ),
                 Center(
                   child: Card(
-                    child: CircleAvatar(
-                      backgroundColor: Colors.grey.shade400,
-                      child: const Image(
-                          image: AssetImage('assets/images/man.png')),
-                      maxRadius: 70,
-                    ),
+                    child: context.watch<UserController>().user == null
+                        ? CircleAvatar(
+                            backgroundColor: Colors.grey.shade400,
+                            child: const Image(
+                                image: AssetImage('assets/images/man.png')),
+                            maxRadius: 70,
+                          )
+                        : CircleAvatar(
+                            backgroundColor: Colors.grey.shade400,
+                            child: Image(
+                              image: NetworkImage(context
+                                  .watch<UserController>()
+                                  .user!
+                                  .imageUrl),
+                            ),
+                            maxRadius: 70,
+                          ),
                     elevation: 6.0,
                     shape: const CircleBorder(),
                     clipBehavior: Clip.antiAlias,
                   ),
                 ),
                 SizedBox(height: 2.h),
-                Text(
-                  context.watch<UserController>().user == null
-                      ? 'ضيف'
-                      : context.watch<UserController>().user!.name,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: context.watch<ColorMode>().isDarkMode
-                          ? Colors.blue.shade300
-                          : Colors.black87,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      context.watch<UserController>().user == null
+                          ? 'ضيف'
+                          : context.watch<UserController>().user!.name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: context.watch<ColorMode>().isDarkMode
+                              ? Colors.blue.shade300
+                              : Colors.black87,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    context.watch<UserController>().user != null
+                        ? IconButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, EditUserPage.routeName);
+                            },
+                            icon: Icon(
+                              Icons.edit,
+                              color: context.watch<ColorMode>().isDarkMode
+                                  ? Colors.blue.shade300
+                                  : Colors.black87,
+                            ),
+                          )
+                        : Container(),
+                  ],
                 ),
                 SizedBox(
                   height: 2.h,
@@ -116,17 +146,7 @@ class AppDrawer extends StatelessWidget {
                           onTap!(2, context);
                         },
                       ), // 3
-                      MenuListITem(
-                        itemIndex: 11,
-                        selectedIndex: selectedIndex,
-                        outlineIcon: Icons.settings_outlined,
-                        fillIcon: Icons.settings,
-                        label: 'الإعدادت',
-                        onTap: () {
-                          Navigator.of(context)
-                              .pushNamed(SettingsPage.routeName);
-                        },
-                      ), // 4
+
                       MenuListITem(
                         itemIndex: 3,
                         selectedIndex: selectedIndex,
@@ -136,6 +156,17 @@ class AppDrawer extends StatelessWidget {
                         onTap: () {
                           Navigator.pop(context);
                           onTap!(3, context);
+                        },
+                      ), // 4
+                      MenuListITem(
+                        itemIndex: 11,
+                        selectedIndex: selectedIndex,
+                        outlineIcon: Icons.settings_outlined,
+                        fillIcon: Icons.settings,
+                        label: 'الإعدادت',
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(SettingsPage.routeName);
                         },
                       ), // 5
                       Divider(
@@ -177,7 +208,6 @@ class AppDrawer extends StatelessWidget {
                               bool loggedout = await context
                                   .read<UserController>()
                                   .logoutUser(user.email, token);
-                              print(loggedout);
                               if (loggedout) {
                                 Navigator.pop(context);
                               }

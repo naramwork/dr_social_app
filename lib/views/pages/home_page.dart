@@ -8,7 +8,6 @@ import 'package:dr_social/views/components/content_card_components/verse_top_wid
 import 'package:dr_social/views/components/home_page/azan_time_home_card.dart';
 import 'package:dr_social/views/components/home_page/main_home_card.dart';
 import 'package:dr_social/views/components/rounded_button_widget.dart';
-import 'package:dr_social/views/main_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,42 +34,8 @@ class HomePage extends StatelessWidget {
                   height: 6.h,
                 ),
                 const AzanTimeHomeCard(),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: RoundedButtonWidget(
-                    label: const Text(
-                      'عرض التفاصيل',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    width: 45.w,
-                    onpressed: () {
-                      Navigator.of(context).pushReplacementNamed(
-                          MainLayout.routeName,
-                          arguments: 3);
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                CardWidget(
-                  hieght: (90 - 50),
-                  topWidget: const CardTriangleTopWidget(
-                    title: 'حديث \nاليوم',
-                  ),
-                  botWidget: SpinnerBottomWidget(
-                    content: context
-                            .watch<UpdateContentController>()
-                            .hadithOfTheDay
-                            ?.content ??
-                        '',
-                  ),
-                ),
                 SizedBox(
-                  height: 6.0.h,
+                  height: 6.h,
                 ),
                 Consumer<UpdateContentController>(
                   builder: (BuildContext context, value, Widget? child) {
@@ -93,7 +58,7 @@ class HomePage extends StatelessWidget {
                   },
                 ),
                 SizedBox(
-                  height: 1.h,
+                  height: 1.0.h,
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -113,6 +78,22 @@ class HomePage extends StatelessWidget {
                 ),
                 SizedBox(
                   height: 1.h,
+                ),
+                CardWidget(
+                  hieght: (90 - 50),
+                  topWidget: const CardTriangleTopWidget(
+                    title: 'حديث \nاليوم',
+                  ),
+                  botWidget: SpinnerBottomWidget(
+                    content: context
+                            .watch<UpdateContentController>()
+                            .hadithOfTheDay
+                            ?.content ??
+                        '',
+                  ),
+                ),
+                SizedBox(
+                  height: 10.h,
                 ),
                 CardWidget(
                   hieght: (90 - 50),

@@ -3,10 +3,13 @@ import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/user_controller.dart';
 
 import 'package:dr_social/views/components/static_page_name_container.dart';
-import 'package:dr_social/views/pages/register/sign_up_page_four.dart';
-import 'package:dr_social/views/pages/register/sign_up_page_one.dart';
-import 'package:dr_social/views/pages/register/sign_up_page_three.dart';
-import 'package:dr_social/views/pages/register/sign_up_page_two.dart';
+import 'package:dr_social/views/pages/register/register_page_five.dart';
+import 'package:dr_social/views/pages/register/register_page_four.dart';
+import 'package:dr_social/views/pages/register/register_page_one.dart';
+import 'package:dr_social/views/pages/register/register_page_seven.dart';
+import 'package:dr_social/views/pages/register/register_page_six.dart';
+import 'package:dr_social/views/pages/register/register_page_three.dart';
+import 'package:dr_social/views/pages/register/register_page_tow.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -102,30 +105,22 @@ class _SignUpPageViewState extends State<SignUpPageView> {
             physics: const NeverScrollableScrollPhysics(),
             controller: controller,
             children: [
-              SignUpPageOne(
-                nextPage: nextPage,
-                previousPage: previousPage,
-              ),
-              SignUpPageTwo(
-                nextPage: nextPage,
-                previousPage: previousPage,
-              ),
-              SignUpPageThree(
-                nextPage: nextPage,
-                previousPage: previousPage,
-              ),
-              SignUpPageFour(
-                previousPage: previousPage,
-              ),
+              RegisterPageOne(nextPage: nextPage),
+              RegisterPageTow(nextPage: nextPage, previousPage: previousPage),
+              RegisterPageThree(nextPage: nextPage, previousPage: previousPage),
+              RegisterPageFour(nextPage: nextPage, previousPage: previousPage),
+              RegisterPageFive(nextPage: nextPage, previousPage: previousPage),
+              RegisterPageSix(nextPage: nextPage, previousPage: previousPage),
+              RegisterPageSeven(previousPage: previousPage),
             ],
           ),
         ),
         DotsIndicator(
-          dotsCount: 4,
+          dotsCount: 7,
           position: currentPage,
           decorator: DotsDecorator(
-            size: Size(11.0.w, 10),
-            activeSize: Size(11.0.w, 10),
+            size: Size(6.0.w, 10),
+            activeSize: Size(6.0.w, 10),
             color: context.watch<ColorMode>().dotColor,
             activeColor: context.watch<ColorMode>().dotActiveColor,
             shape: RoundedRectangleBorder(

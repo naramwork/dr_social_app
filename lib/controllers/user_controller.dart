@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dr_social/app/helper_files/app_const.dart';
 import 'package:dr_social/models/user.dart';
@@ -8,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:country_calling_code_picker/picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserController extends ChangeNotifier {
   final Map<String, String> _userInfo = {};
@@ -39,6 +39,9 @@ class UserController extends ChangeNotifier {
 
   Future<bool> registerUser() async {
     var url = Uri.parse(kGetRegisterUrl);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String token = prefs.getString(kStorTokenKey) ?? '';
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -57,31 +60,35 @@ class UserController extends ChangeNotifier {
         'children_number': _userInfo['childrenNumber']!.isNotEmpty
             ? _userInfo['childrenNumber']
             : 0,
-        'educational_Status': _userInfo['educationalStatus'] ?? '',
         'social_status': _userInfo['socialStatus']!.isNotEmpty
             ? _userInfo['socialStatus']
             : 'غير محدد',
         'city': _userInfo['city'] ?? '',
         'nationality': _userInfo['nationality'] ?? '',
         'civil_id_no': _userInfo['civilIdNo'] ?? '',
-        'civil_id_no_exp': _userInfo['civilIdNoExp'] ?? '',
-        'fire_base_token': 'later',
+        'fire_base_token': token,
         'birthdate': _userInfo['birthDate'] ?? '',
-        'address': _userInfo['address'] ?? '',
-        'height': _userInfo['height']!.isNotEmpty
-            ? _userInfo['height']!.isNotEmpty
-            : 0,
-        'weight': _userInfo['weight']!.isNotEmpty
-            ? _userInfo['weight']!.isNotEmpty
-            : 0,
-        'wife_count': (_userInfo['wifeCount'] != null &&
-                _userInfo['wifeCount']!.isNotEmpty)
-            ? _userInfo['wifeCount']
-            : 0,
-        'more': jsonEncode({'late': 'later'}),
+        'height': _userInfo['height']!.isNotEmpty ? _userInfo['height'] : 0,
+        'weight': _userInfo['weight']!.isNotEmpty ? _userInfo['weight'] : 0,
+        'fullName': _userInfo['fullName'],
+        'country': _userInfo['country'],
+        'smoking': _userInfo['smoking'],
+        'beard': _userInfo['beard'],
+        'religion': _userInfo['religion'],
+        'financialStatus': _userInfo['financialStatus'],
+        'skinColour': _userInfo['skinColour'],
+        'physique': _userInfo['physique'],
+        'religiosity': _userInfo['religiosity'],
+        'employment': _userInfo['employment'],
+        'healthStatus': _userInfo['healthStatus'],
+        'specifications': _userInfo['specifications'],
+        'income': _userInfo['income'],
+        'aboutYou': _userInfo['aboutYou'],
+        'educational': _userInfo['educational'],
+        'image_url': _userInfo['gender'] == 'm' ? kmanImageUrl : kwomanImageUrl,
+        'prayer': _userInfo['prayer'],
       }),
     );
-
     if (response.statusCode == 201) {
       return loginUser(_userInfo['email'] ?? '', _userInfo['password'] ?? '');
     } else {
@@ -113,12 +120,44 @@ class UserController extends ChangeNotifier {
     }
   }
 
-  void getLogedinUser() {
+  Future getLogedinUser() async {
     Box userBox = Hive.box<User>(kUserBoxName);
     if (userBox.values.isNotEmpty) {
       _user = userBox.values.first;
+      refreshUserFcm();
       notifyListeners();
     }
+
+    return Future;
+  }
+
+  Future<bool> refreshUserFcm() async {
+    if (_user == null) return false;
+    int id = _user?.id ?? 0;
+    String token = _user?.token ?? '';
+    var url = Uri.parse('$krefreshFcmUrl/$id');
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    final jsonExtractedList = json.decode(response.body);
+    if (jsonExtractedList['error'] != null) {
+      return false;
+    }
+    List<String> fcmResponse = [];
+    if (jsonExtractedList['fire_base_token'].runtimeType == String) {
+      fcmResponse.add(jsonExtractedList['fire_base_token']);
+    } else {
+      List<dynamic> dyn = jsonExtractedList['fire_base_token'];
+      fcmResponse = dyn.map((e) => e.toString()).toList();
+    }
+    _user?.fcm = fcmResponse;
+    await _user?.save();
+    return true;
   }
 
   Future<bool> loginUser(String email, String pssword) async {
@@ -143,10 +182,11 @@ class UserController extends ChangeNotifier {
       var userJson = jsonExtractedList['user'];
       String email = userJson['email'];
       String name = userJson['name'];
+      int id = userJson['id'];
       var profile = userJson['profile'];
-      User user = User.fromJson(email, name, profile, token, true);
+      User user = User.fromJson(id, email, name, profile, token, false);
       Box userBox = Hive.box<User>(kUserBoxName);
-      await userBox.add(user);
+      userBox.add(user);
       _user = user;
       notifyListeners();
       return true;
@@ -177,6 +217,70 @@ class UserController extends ChangeNotifier {
       return Future.value(true);
     } else {
       return Future.value(false);
+    }
+  }
+
+  //Check if the provided email in sign up stage is already saved into the database
+  Future<String> checkUser(String name, String value) async {
+    var url = Uri.parse(kCheckUserFcmUrl);
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{'name': name, 'value': value}),
+    );
+    final jsonExtractedList = json.decode(response.body);
+
+    if (jsonExtractedList == 1) {
+      return '1';
+    }
+    if (jsonExtractedList['errors'] != null) {
+      if (jsonExtractedList['errors']['no_user'] != null) {
+        return jsonExtractedList['errors']['no_user'][0] as String;
+      } else {
+        return jsonExtractedList['errors']['value'][0] as String;
+      }
+    } else {
+      return '2';
+    }
+  }
+
+  //refresh user data after update
+  Future refreshUserInfo(User? currentUser) async {
+    if (currentUser == null) return false;
+    try {
+      var url = Uri.parse('$kRefreshUserUrl${currentUser.id}');
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ${currentUser.token}',
+        },
+      );
+
+      String token = currentUser.token;
+      final jsonExtractedList = json.decode(response.body);
+
+      if (jsonExtractedList['errors'] == null) {
+        String email = jsonExtractedList['email'];
+        String name = jsonExtractedList['name'];
+        int id = jsonExtractedList['id'];
+        var profile = jsonExtractedList['profile'];
+        User user = User.fromJson(id, email, name, profile, token, false);
+        Box userBox = Hive.box<User>(kUserBoxName);
+        userBox.delete(_user!.key);
+        userBox.add(user);
+        _user = user;
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

@@ -5,7 +5,9 @@ class ColorConst {
   // static Color lightBlue = Colors.blue.shade300;
   static Color extraLightBlue = Colors.blue.shade200;
   // static Color darkTransparent = Color.fromRGBO(60, 105, 180, 0.7);
-  static Color darkTransparent = Color(0xff538CB2).withOpacity(0.7);
+  static Color darkTransparent = const Color(0xff538CB2).withOpacity(0.7);
+
+  static Color lightCylan = const Color(0xff84FFFF);
   //
   // static Color dotColor = isDarkMode
   //     ? Color.fromRGBO(200, 230, 241, 1)

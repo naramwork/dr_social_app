@@ -1,5 +1,4 @@
 import 'package:dr_social/controllers/user_controller.dart';
-import 'package:dr_social/views/components/register/date_text_field.dart';
 import 'package:dr_social/views/components/register/next_button.dart';
 
 import 'package:dr_social/views/components/register/previouse_button.dart';
@@ -9,97 +8,98 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class SignUpPageThree extends StatelessWidget {
-  final Function nextPage;
+class RegisterPageSix extends StatelessWidget {
   final Function previousPage;
-  SignUpPageThree(
-      {Key? key, required this.nextPage, required this.previousPage})
+  final Function nextPage;
+
+  RegisterPageSix(
+      {Key? key, required this.previousPage, required this.nextPage})
       : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
+
   final ScrollController scrollController = ScrollController(
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
-  final Map<String, String> pageThreeUserInfo = {
-    'gender': 'm',
-  };
+
+  final Map<String, String> pageTowUserInfo = {};
 
   void setUserInfoMap(BuildContext context) {
     var userInfo = context.watch<UserController>().usetInfo;
     if (userInfo.isNotEmpty) {
-      pageThreeUserInfo.addAll(userInfo);
+      pageTowUserInfo.addAll(userInfo);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     setUserInfoMap(context);
+
     return WillPopScope(
       onWillPop: () {
         previousPage();
         return Future.value(false);
       },
       child: SingleChildScrollView(
+        controller: scrollController,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 5.0.w),
           child: Form(
             key: _formKey,
             child: Column(
               children: [
-                DateTextField(
-                  hintText: 'تاريخ الميلاد',
-                  icon: Icons.calendar_today_outlined,
+                RoundedTextField(
+                  hintText: 'الوضع المادي',
+                  imageIcon: 'assets/images/document.png',
                   isRequired: true,
-                  initValue: pageThreeUserInfo['birthDate'],
+                  initValue: pageTowUserInfo['financialStatus'],
                   onSave: (value) {
-                    pageThreeUserInfo['birthDate'] = value;
+                    pageTowUserInfo['financialStatus'] = value;
                   },
                   suffixIcon: Icons.fiber_manual_record,
                 ),
                 RoundedTextField(
-                  hintText: pageThreeUserInfo['gender'] == 'm'
-                      ? 'رقم البطاقة المدنية'
-                      : 'البطاقة المدنية لولي الزوجة',
-                  icon: Icons.badge_outlined,
+                  hintText: 'المؤهل العلمي',
+                  icon: Icons.create_outlined,
                   isRequired: true,
-                  inputType: TextInputType.number,
-                  initValue: pageThreeUserInfo['civilIdNo'],
+                  initValue: pageTowUserInfo['educational'],
                   onSave: (value) {
-                    pageThreeUserInfo['civilIdNo'] = value;
+                    pageTowUserInfo['educational'] = value;
                   },
                   suffixIcon: Icons.fiber_manual_record,
                 ),
-                DateTextField(
-                  hintText: 'تاريخ انتهاء البطاقة المدنية',
-                  icon: Icons.badge_outlined,
-                  isRequired: true,
-                  initValue: pageThreeUserInfo['civilIdNoExp'],
-                  onSave: (value) {
-                    pageThreeUserInfo['civilIdNoExp'] = value;
-                  },
-                  suffixIcon: Icons.fiber_manual_record,
-                ),
-                pageThreeUserInfo['gender'] == 'm'
-                    ? RoundedTextField(
-                        hintText: 'عدد الزوجات',
-                        inputType: TextInputType.number,
-                        imageIcon: 'assets/images/couple.png',
-                        initValue: pageThreeUserInfo['wifeCount'],
-                        onSave: (value) {
-                          pageThreeUserInfo['wifeCount'] = value;
-                        },
-                      )
-                    : Container(),
                 RoundedTextField(
-                  hintText: 'عدد الأولاد',
-                  inputType: TextInputType.number,
-                  imageIcon: 'assets/images/children.png',
-                  initValue: pageThreeUserInfo['childrenNumber'],
+                  hintText: 'الوظيفة',
+                  icon: Icons.work_outline,
+                  isRequired: true,
+                  initValue: pageTowUserInfo['job'],
                   onSave: (value) {
-                    pageThreeUserInfo['childrenNumber'] = value;
+                    pageTowUserInfo['job'] = value;
+                  },
+                  suffixIcon: Icons.fiber_manual_record,
+                ),
+                RoundedTextField(
+                  hintText: 'مجال العمل',
+                  icon: Icons.work_outline,
+                  isRequired: true,
+                  initValue: pageTowUserInfo['employment'],
+                  onSave: (value) {
+                    pageTowUserInfo['employment'] = value;
+                  },
+                  suffixIcon: Icons.fiber_manual_record,
+                ),
+                RoundedTextField(
+                  hintText: 'الدخل الشهري',
+                  icon: Icons.create_outlined,
+                  isRequired: true,
+                  inputType: TextInputType.number,
+                  initValue: pageTowUserInfo['income'],
+                  onSave: (value) {
+                    pageTowUserInfo['income'] = value;
                   },
                   isLastInfoucs: true,
+                  suffixIcon: Icons.fiber_manual_record,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -124,30 +124,18 @@ class SignUpPageThree extends StatelessWidget {
   }
 
   void saveForm(BuildContext context) async {
+    //print('phone: $phone');
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      context.read<UserController>().addToUserInfo(pageTowUserInfo);
 
-      nextPage(); // index of the page
-      context.read<UserController>().addToUserInfo(pageThreeUserInfo);
+      nextPage();
+
+      // index of the page
     } else {
       scrollController.animateTo(0.0,
           duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
     }
-  }
-
-  void showSnackBar(String text, BuildContext context) {
-    SnackBar snackBar = SnackBar(
-      content: Text(
-        text,
-        style: const TextStyle(
-          fontFamily: 'Tajawl',
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      behavior: SnackBarBehavior.floating,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

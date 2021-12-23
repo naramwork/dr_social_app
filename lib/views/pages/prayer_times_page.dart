@@ -1,6 +1,8 @@
 import 'package:adhan_dart/adhan_dart.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:dr_social/app/helper_files/app_const.dart';
+import 'package:dr_social/app/themes/color_const.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/prayer_time_controller.dart';
 import 'package:dr_social/models/prayer_hour.dart';
@@ -14,6 +16,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/page_name_container.dart';
 
@@ -46,8 +49,13 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
 
   @override
   void didChangeDependencies() {
+    getPrayer(context);
     super.didChangeDependencies();
-    PrayerTimes prayerTimes = context.watch<PrayerTimeController>().prayerTimes;
+  }
+
+  void getPrayer(BuildContext context) {
+    prayerHour.clear();
+    PrayerTimes prayerTimes = context.read<PrayerTimeController>().prayerTimes;
     prayerHour = [
       PrayerHour(
         salahName: 'صلاة الفجر',
@@ -77,6 +85,17 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     ];
 
     checkAndAddNotifications(context);
+  }
+
+  void onChange(String value, BuildContext context) {
+    context
+        .read<PrayerTimeController>()
+        .setPrayerCalculationParam(value == 'shafi')
+        .then((value) {
+      setState(() {
+        getPrayer(context);
+      });
+    });
   }
 
   void checkAndAddNotifications(BuildContext context) async {
@@ -113,7 +132,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                 backgroundImageUrl: 'assets/images/duas_bg.png',
               ),
               SliverPadding(
-                  padding: EdgeInsets.fromLTRB(3.w, 5.h, 3.w, 10.h),
+                  padding: EdgeInsets.fromLTRB(3.w, 5.h, 3.w, 5.h),
                   sliver: SliverToBoxAdapter(
                     child: Column(
                       children: [
@@ -167,12 +186,81 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                         SizedBox(
                           height: 2.h,
                         ),
-                        PrayerTimeContainer(
-                          salahName: prayerHour[4].salahName,
-                          dateName: prayerHour[4].time,
-                          imageUrl: prayerHour[4].imageUrl,
-                          filterColer: Colors.blue.withOpacity(0.3),
-                          color: const Color(0xff7382EE),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            PrayerTimeContainer(
+                              salahName: prayerHour[4].salahName,
+                              dateName: prayerHour[4].time,
+                              imageUrl: prayerHour[4].imageUrl,
+                              filterColer: Colors.blue.withOpacity(0.3),
+                              color: const Color(0xff7382EE),
+                            ),
+                            SizedBox(
+                              width: 2.w,
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                String? value;
+                                if (prefs.getBool(kIsShafiKey) != null) {
+                                  if (prefs.getBool(kIsShafiKey)!) {
+                                    value = 'shafi';
+                                  } else {
+                                    value = 'hanafi';
+                                  }
+                                }
+
+                                showDialog(
+                                    context: context,
+                                    builder: (ctx) => MazhabDialog(
+                                          onChange: onChange,
+                                          value: value,
+                                        ));
+                              },
+                              child: Card(
+                                elevation: 6,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                                child: Container(
+                                  width: 42.w,
+                                  height: 45.w,
+                                  padding: EdgeInsets.fromLTRB(2.w, 0, 2.w, 0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(40),
+                                    color: const Color(0xff7382EE),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.blue.withOpacity(0.2),
+                                          BlendMode.dstIn),
+                                      image: const AssetImage(
+                                          'assets/images/colored_mosque.jpg'),
+                                    ),
+                                  ),
+                                  child: Align(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 5.w, vertical: 2.h),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: const Color.fromRGBO(
+                                            255, 255, 255, 0.6),
+                                      ),
+                                      child: const Text(
+                                        'اختيار المذهب',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                       //6077E5
@@ -187,5 +275,95 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
 
   String convertTimeToString(DateTime? dateTime) {
     return DateFormat.jms('ar_Dz').format(dateTime!.toLocal()).toString();
+  }
+}
+
+class MazhabDialog extends StatelessWidget {
+  final Function onChange;
+  final String? value;
+  const MazhabDialog({Key? key, required this.onChange, this.value})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
+      elevation: 12,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: context.watch<ColorMode>().isDarkMode
+              ? ColorConst.darkCardColor
+              : Colors.white,
+        ),
+        child: DropdownButton<String>(
+          alignment: Alignment.centerRight,
+          borderRadius: BorderRadius.circular(20),
+          hint: AutoSizeText(
+            'اختيار المذهب',
+            maxLines: 1,
+            style: TextStyle(
+                fontFamily: 'Tajawal',
+                color: context.watch<ColorMode>().isDarkMode
+                    ? Colors.white
+                    : Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w500),
+          ), // Not necessary for Option 1
+          value: value,
+          itemHeight: 10.h,
+          dropdownColor: context.watch<ColorMode>().isDarkMode
+              ? const Color(0xFF184B6C)
+              : Colors.white,
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: context.watch<ColorMode>().isDarkMode
+                ? Colors.white
+                : Colors.black,
+          ),
+
+          items: [
+            DropdownMenuItem<String>(
+              value: 'shafi',
+              child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 5.w),
+                child: Text(
+                  'شافعي، حنبلي، مالكي',
+                  style: TextStyle(
+                    color: context.watch<ColorMode>().isDarkMode
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+            DropdownMenuItem<String>(
+              value: 'hanafi',
+              child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 5.w),
+                child: Text(
+                  'حنفي',
+                  style: TextStyle(
+                    color: context.watch<ColorMode>().isDarkMode
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+          onChanged: (newValue) {
+            onChange(newValue, context);
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
   }
 }

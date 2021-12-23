@@ -7,14 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class SignUpPageOne extends StatelessWidget {
+class RegisterPageOne extends StatelessWidget {
   final Function nextPage;
-  final Function previousPage;
 
-  SignUpPageOne({
+  RegisterPageOne({
     Key? key,
     required this.nextPage,
-    required this.previousPage,
   }) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
@@ -78,6 +76,7 @@ class SignUpPageOne extends StatelessWidget {
                   hintText: 'كلمة المرور',
                   icon: Icons.lock_outlined,
                   isRequired: true,
+                  initValue: pageOneUserInfo['password'],
                   onSave: (value) {
                     pageOneUserInfo['password'] = value;
                   },
@@ -88,6 +87,7 @@ class SignUpPageOne extends StatelessWidget {
                   hintText: 'تأكيد كلمة المرور',
                   icon: Icons.lock_outlined,
                   isRequired: true,
+                  initValue: pageOneUserInfo['confirmPassword'],
                   onSave: (value) {
                     pageOneUserInfo['confirmPassword'] = value;
                   },
@@ -120,12 +120,23 @@ class SignUpPageOne extends StatelessWidget {
   void saveForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      // check if email is alredy exits
+      String response = await context
+          .read<UserController>()
+          .checkUser('email', pageOneUserInfo['email'] ?? '');
 
-      if (pageOneUserInfo['password'] != pageOneUserInfo['confirmPassword']) {
-        showSnackBar('كلمات السر غير متطابقة', context);
+      //respose = 1 means there is no email register in data base
+      if (response == "1") {
+        if (pageOneUserInfo['password'] != pageOneUserInfo['confirmPassword']) {
+          showSnackBar('كلمات السر غير متطابقة', context);
+        } else {
+          nextPage();
+          context.read<UserController>().addToUserInfo(pageOneUserInfo);
+        }
       } else {
-        nextPage();
-        context.read<UserController>().addToUserInfo(pageOneUserInfo);
+        showSnackBar(response, context);
+        scrollController.animateTo(0.0,
+            duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
       }
     } else {
       scrollController.animateTo(0.0,

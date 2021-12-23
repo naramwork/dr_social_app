@@ -1,6 +1,4 @@
-import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/update_content_controler.dart';
-import 'package:dr_social/models/dua.dart';
 import 'package:dr_social/models/hadith.dart';
 import 'package:dr_social/views/components/content_card_components/bottom_widget.dart';
 import 'package:dr_social/views/components/content_card_components/card_widget.dart';

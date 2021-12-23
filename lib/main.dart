@@ -1,6 +1,8 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:dr_social/app/helper_files/app_const.dart';
+import 'package:dr_social/controllers/edit_user_controller.dart';
+import 'package:dr_social/controllers/marriage_controller.dart';
 import 'package:dr_social/controllers/prayer_notification_builder.dart';
 import 'package:dr_social/controllers/color_mode.dart';
 import 'package:dr_social/controllers/prayer_time_controller.dart';
@@ -9,6 +11,10 @@ import 'package:dr_social/controllers/user_controller.dart';
 import 'package:dr_social/controllers/verses_controller.dart';
 import 'package:dr_social/models/dua.dart';
 import 'package:dr_social/models/hadith.dart';
+import 'package:dr_social/views/pages/edit_user_page.dart';
+import 'package:dr_social/views/pages/marriage/marriage_requests_page.dart';
+import 'package:dr_social/views/pages/marriage/message_page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:dr_social/models/prayer_notification.dart';
 import 'package:dr_social/models/update_content.dart';
 import 'package:dr_social/models/user.dart';
@@ -18,11 +24,12 @@ import 'package:dr_social/views/main_layout.dart';
 import 'package:dr_social/views/pages/content_pages/duas_page.dart';
 import 'package:dr_social/views/pages/content_pages/hadith_page.dart';
 import 'package:dr_social/views/pages/content_pages/verses_pages/verses_page.dart';
+import 'package:dr_social/views/pages/marriage/partner_info_page.dart';
+import 'package:dr_social/views/pages/no_internet_page.dart';
 import 'package:dr_social/views/pages/register/login_page.dart';
 import 'package:dr_social/views/pages/register/sign_up_page.dart';
 import 'package:dr_social/views/pages/settings_page.dart';
 import 'package:dr_social/views/pages/splash_screen.dart';
-import 'package:dr_social/views/test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -31,7 +38,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'controllers/content_notification_builder.dart';
 import 'controllers/notification_controller.dart';
-import 'views/pages/marriage_page.dart';
+import 'views/pages/marriage/marriage_page.dart';
 
 void main() async {
   await initHive();
@@ -120,6 +127,12 @@ class MyApp extends StatelessWidget {
           create: (ctx) => UserController(),
         ),
         ChangeNotifierProvider(
+          create: (ctx) => MarriageController(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => EditUserController(),
+        ),
+        ChangeNotifierProvider(
           create: (ctx) => ColorMode(savedThemeMode == AdaptiveThemeMode.dark),
         ),
       ],
@@ -127,19 +140,33 @@ class MyApp extends StatelessWidget {
         return ThemeWidget(
           savedThemeMode: savedThemeMode,
           builder: (theme, darkTheme) => MaterialApp(
+            locale: const Locale('ar', 'DZ'),
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('ar', 'DZ'),
+            ],
             theme: theme,
             darkTheme: darkTheme,
             routes: {
               SplashScreen.routeName: (context) => const SplashScreen(),
               MainLayout.routeName: (context) => const MainLayout(),
               SignUpPage.routeName: (context) => const SignUpPage(),
-              LoginPage.routeName: (context) => LoginPage(),
+              LoginPage.routeName: (context) => const LoginPage(),
               VersesPage.routeName: (context) => const VersesPage(),
               DuasPage.routeName: (context) => const DuasPage(),
               HadithPage.routeName: (context) => const HadithPage(),
               SettingsPage.routeName: (context) => const SettingsPage(),
               MarriagePage.routeName: (context) => const MarriagePage(),
-              TestPage.routeName: (context) => TestPage(),
+              PartnerInfoPage.routeName: (context) => const PartnerInfoPage(),
+              NoInternetPage.routeName: (context) => const NoInternetPage(),
+              MessagePage.routeName: (context) => const MessagePage(),
+              EditUserPage.routeName: (context) => const EditUserPage(),
+              MarriageRequestPage.routeName: (context) =>
+                  const MarriageRequestPage(),
             },
             builder: (context, child) {
               return Directionality(

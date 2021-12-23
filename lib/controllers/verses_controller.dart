@@ -18,7 +18,7 @@ class VersesControler extends ChangeNotifier {
     try {
       final response = await http.get(url);
       final jsonExtractedList = json.decode(response.body);
-      final previousJsonList = jsonExtractedList['previous'];
+      //final previousJsonList = jsonExtractedList['previous'];
       final verseListData =
           jsonExtractedList['verses']['data'] as List<dynamic>;
       final lastPage = jsonExtractedList['verses']['last_page'];

@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
+import '../../main_layout.dart';
+
 class AllContentPage extends StatefulWidget {
   const AllContentPage({Key? key}) : super(key: key);
 
@@ -90,8 +92,9 @@ class _AllContentPageState extends State<AllContentPage> {
                             ContentTypeCard(
                                 name: 'البحث',
                                 onTap: () {
-                                  Navigator.of(context)
-                                      .pushNamed(DuasPage.routeName);
+                                  Navigator.of(context).pushReplacementNamed(
+                                      MainLayout.routeName,
+                                      arguments: 1);
                                 },
                                 imageUrl: 'assets/images/colored_mosque.jpg'),
                           ],

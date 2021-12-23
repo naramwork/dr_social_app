@@ -17,7 +17,7 @@ class FAP extends StatelessWidget {
         gotToMarriagePage(context);
       },
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         width: 60,
         height: 60,
         child: const ImageIcon(

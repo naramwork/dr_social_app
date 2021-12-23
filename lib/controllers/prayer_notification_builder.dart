@@ -1,12 +1,10 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:dr_social/app/helper_files/app_const.dart';
 import 'package:dr_social/models/prayer_notification.dart';
 import 'package:flutter/material.dart';
 
 Future<void> createPrayerNotification(
     PrayerNotification prayerNotification) async {
-  await AwesomeNotifications()
-      .cancelNotificationsByGroupKey(kPrayerChannelGroupKey);
+  await AwesomeNotifications().cancelAll();
 
   await AwesomeNotifications().createNotification(
     content: NotificationContent(

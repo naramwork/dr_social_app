@@ -123,6 +123,10 @@ class _PhoneTextFieldState extends State<PhoneTextField> {
             ),
             Expanded(
               child: TextFormField(
+                style: TextStyle(
+                    color: context.watch<ColorMode>().isDarkMode
+                        ? Colors.white
+                        : Colors.black),
                 textInputAction: TextInputAction.next,
                 initialValue: widget.initValue,
                 keyboardType: TextInputType.phone,

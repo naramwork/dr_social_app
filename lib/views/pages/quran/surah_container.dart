@@ -7,14 +7,16 @@ import 'package:quran/quran.dart' as quran;
 
 class SurahContainer extends StatelessWidget {
   final Surah surah;
-  const SurahContainer({Key? key, required this.surah}) : super(key: key);
+  final double fontSize;
+  const SurahContainer({Key? key, required this.surah, required this.fontSize})
+      : super(key: key);
 
   TextStyle textStyle(BuildContext context) {
     return TextStyle(
       color:
           context.watch<ColorMode>().isDarkMode ? Colors.white : Colors.black,
       fontWeight: FontWeight.w500,
-      fontSize: 16,
+      fontSize: fontSize,
     );
   }
 

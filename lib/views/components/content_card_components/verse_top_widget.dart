@@ -21,7 +21,7 @@ class VerseTopWidget extends StatelessWidget {
         gradient: ColorConst.topCardWidgetGradient,
       ),
       child: Text(
-        '${surah}: ${part.replaceFirst('الجزء', '')}',
+        '$surah: ${part.replaceFirst('الجزء', '')}',
         style: const TextStyle(
             color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
       ),

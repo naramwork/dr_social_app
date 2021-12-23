@@ -7,8 +7,8 @@ import 'package:dr_social/views/components/layout/custom_bottom_app_bar.dart';
 import 'package:dr_social/views/components/layout/fap.dart';
 import 'package:dr_social/views/components/name_header_card.dart';
 import 'package:dr_social/views/main_layout.dart';
+import 'package:dr_social/views/pages/edit_user_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,9 +38,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void setSwitchValue() async {
     prefs = await SharedPreferences.getInstance();
-
     setState(() {
-      isSwitched = prefs.getBool(isPrayerNotificationActiveKey) ?? false;
+      isSwitched = prefs.getBool(isPrayerNotificationActiveKey) ?? true;
     });
   }
 
@@ -129,6 +128,32 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 2.h,
+            ),
+            SettingCardContainer(
+                child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, EditUserPage.routeName);
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(vertical: 2.h),
+                  child: AutoSizeText(
+                    'تعديل الملف الشخصي',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color: context.watch<ColorMode>().isDarkMode
+                            ? Colors.white
+                            : Colors.black),
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+            ))
           ],
         ),
       ),
